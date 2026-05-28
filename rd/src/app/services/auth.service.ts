@@ -19,8 +19,11 @@ export class AuthService {
     this.loadSession().subscribe();
   }
 
-  login(credentials: { email: string; password: string }) {
-    return this.api.post<AuthResponse>('/usuarios/login', credentials).pipe(
+  login(credentials: { identifier: string; password: string }) {
+    return this.api.post<AuthResponse>('/usuarios/login', {
+      email: credentials.identifier,
+      password: credentials.password
+    }).pipe(
       tap(res => this.saveSession(res))
     );
   }

@@ -16,7 +16,7 @@ export class LoginComponent {
   isSubmitting = signal(false);
 
   form = new FormGroup({
-    email: new FormControl('', [Validators.required, Validators.email]),
+    identifier: new FormControl('', Validators.required),
     password: new FormControl('', Validators.required)
   });
 
@@ -31,7 +31,8 @@ export class LoginComponent {
     this.isSubmitting.set(true);
     this.error.set('');
 
-    this.authService.login(this.form.value as { email: string; password: string }).subscribe({
+    const formValue = this.form.value as { identifier: string; password: string };
+    this.authService.login(formValue).subscribe({
       next: () => {
         this.router.navigate(['/posts']);
       },
