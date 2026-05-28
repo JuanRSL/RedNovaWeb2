@@ -1,3 +1,4 @@
+// src/app/services/auth.service.ts
 import { Injectable, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, map, of, tap } from 'rxjs';
@@ -12,6 +13,11 @@ export class AuthService {
   private readonly router = inject(Router);
 
   currentUser = signal<User | null>(null);
+
+  constructor() {
+    // ✅ Cargar la sesión cuando se crea el servicio
+    this.loadSession().subscribe();
+  }
 
   login(credentials: { email: string; password: string }) {
     return this.api.post<AuthResponse>('/usuarios/login', credentials).pipe(
@@ -33,9 +39,13 @@ export class AuthService {
     }
 
     return this.api.get<User>('/usuarios/me').pipe(
-      map(user => ({ ...user, id: user.id || user.id })),
-      tap(user => this.currentUser.set(user)),
-      catchError(() => {
+      map(user => ({ ...user, id: user.id || user._id })),
+      tap(user => {
+        this.currentUser.set(user);
+        console.log('✅ Sesión cargada:', user.username);
+      }),
+      catchError((error) => {
+        console.error('❌ Error cargando sesión:', error);
         this.currentUser.set(null);
         return of(null);
       })

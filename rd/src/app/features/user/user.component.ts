@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { UserService } from '../../services/user.service';
@@ -13,12 +13,13 @@ import { Subject, takeUntil } from 'rxjs';
   templateUrl: './user.component.html',
   styleUrls: ['./user.component.css']
 })
-export class ProfileComponent implements OnInit {
+export class ProfileComponent implements OnInit, OnDestroy {
   private userService = inject(UserService);
   private authService = inject(AuthService);
   private destroy$ = new Subject<void>();
 
-  user = signal<User | null>(null);
+  // Usar el signal del AuthService directamente
+  user = this.authService.currentUser;
   isLoading = signal(true);
   isUpdating = signal(false);
   error = signal('');
@@ -28,7 +29,7 @@ export class ProfileComponent implements OnInit {
   profileForm = new FormGroup({
     email: new FormControl('', [Validators.email]),
     currentPassword: new FormControl(''),
-    newPassword: new FormControl('', [Validators.minLength(6), Validators.pattern(/(?=.*[A-Z])(?=.*\d)/)])
+    newPassword: new FormControl('', [Validators.minLength(6)])
   });
 
   ngOnInit() {
@@ -39,12 +40,25 @@ export class ProfileComponent implements OnInit {
     this.isLoading.set(true);
     this.error.set('');
 
-    this.userService.getMyProfile()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
+    //Verificar si ya tenemos el usuario
+    const currentUser = this.authService.currentUser();
+    
+    if (currentUser) {
+      this.profileForm.patchValue({ email: currentUser.email });
+      this.isLoading.set(false);
+      
+      // Recargar por si hay cambios recientes
+      this.authService.loadSession().subscribe({
+        next: () => this.isLoading.set(false),
+        error: () => this.isLoading.set(false)
+      });
+    } else {
+      // Si no hay usuario, intentar cargar sesión
+      this.authService.loadSession().subscribe({
         next: (user) => {
-          this.user.set(user);
-          this.profileForm.patchValue({ email: user.email });
+          if (user) {
+            this.profileForm.patchValue({ email: user.email });
+          }
           this.isLoading.set(false);
         },
         error: (err) => {
@@ -52,6 +66,7 @@ export class ProfileComponent implements OnInit {
           this.isLoading.set(false);
         }
       });
+    }
   }
 
   updateProfile() {
@@ -63,6 +78,12 @@ export class ProfileComponent implements OnInit {
     const formValue = this.profileForm.value;
     if (!formValue.email && !formValue.newPassword) {
       this.error.set('No hay cambios para actualizar.');
+      return;
+    }
+
+    // Validar que si hay nueva contraseña, también esté la actual
+    if (formValue.newPassword && !formValue.currentPassword) {
+      this.error.set('Debe ingresar su contraseña actual para cambiarla.');
       return;
     }
 
@@ -84,7 +105,8 @@ export class ProfileComponent implements OnInit {
           this.successMessage.set(response.message || 'Perfil actualizado correctamente.');
           this.isUpdating.set(false);
           this.profileForm.patchValue({ currentPassword: '', newPassword: '' });
-          this.loadProfile();
+          // Recargar la sesión para actualizar los datos
+          this.authService.loadSession().subscribe();
         },
         error: (err) => {
           this.error.set(err?.error?.message || 'No se ha podido actualizar el perfil.');
