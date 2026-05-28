@@ -1,0 +1,5 @@
+.form-card { max-width: 640px; margin: 16px auto; padding: 16px; border: 1px solid var(--muted); border-radius: 8px; }
+.form-card label { display: block; margin-bottom: 8px; }
+.form-card input, .form-card textarea { width: 100%; padding: 8px; margin-top: 4px; }
+.form-card .actions { margin-top: 12px; }
+.error { color: var(--danger); margin-top: 8px; }

@@ -27,8 +27,16 @@ export const routes: Routes = [
     loadComponent: () => import('./features/forum/forumList/forumList.component').then(m => m.ForumListComponent)
   },
   {
+    path: 'forums/new',
+    loadComponent: () => import('./features/forum/forumForm/forumForm.component').then(m => m.ForumFormComponent)
+  },
+  {
     path: 'forums/:id',
     loadComponent: () => import('./features/forum/forumDetail/forumDetail.component').then(m => m.ForumDetailComponent)
+  },
+  {
+    path: 'subforums/new',
+    loadComponent: () => import('./features/subforum/subforumForm/subforumForm.component').then(m => m.SubforumFormComponent)
   },
   {
     path: 'profile',

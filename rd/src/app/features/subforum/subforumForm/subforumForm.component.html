@@ -1,0 +1,30 @@
+<div class="form-card">
+  <h2>Crear Subforo</h2>
+
+  <form (ngSubmit)="submit()" [formGroup]="form">
+    <label>Foro
+      <select formControlName="forumId">
+        <option value="">-- Seleccione --</option>
+        <option *ngFor="let f of forums()" [value]="f._id">{{ f.name }}</option>
+      </select>
+    </label>
+
+    <label>Nombre
+      <input formControlName="name" />
+    </label>
+
+    <label>Slug
+      <input formControlName="slug" />
+    </label>
+
+    <label>Descripción
+      <textarea formControlName="description"></textarea>
+    </label>
+
+    <div class="actions">
+      <button type="submit">Crear Subforo</button>
+    </div>
+
+    <p class="error" *ngIf="error()">{{ error() }}</p>
+  </form>
+</div>

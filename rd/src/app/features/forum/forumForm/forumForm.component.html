@@ -1,0 +1,27 @@
+<div class="form-card">
+  <h2>Crear Foro</h2>
+
+  <form (ngSubmit)="submit()" [formGroup]="form">
+    <label>Nombre
+      <input formControlName="name" />
+    </label>
+
+    <label>Slug
+      <input formControlName="slug" />
+    </label>
+
+    <label>Descripción
+      <textarea formControlName="description"></textarea>
+    </label>
+
+    <label>
+      <input type="checkbox" formControlName="isPrivate" /> Foro privado
+    </label>
+
+    <div class="actions">
+      <button type="submit">Crear</button>
+    </div>
+
+    <p class="error" *ngIf="error()">{{ error() }}</p>
+  </form>
+</div>

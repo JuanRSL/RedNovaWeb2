@@ -17,4 +17,8 @@ export class SubforumService {
     }
     return this.api.get<Subforum[]>('/subforums', params);
   }
+
+  createSubforum(data: { name: string; slug?: string; description?: string; forumId: string }) {
+    return this.api.post<{ message: string; subforum: Subforum }>('/subforums', data);
+  }
 }
