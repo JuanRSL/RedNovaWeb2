@@ -52,9 +52,9 @@
 
       <div class="post-actions">
         <div class="vote-group">
-          <button type="button" class="icon-btn" (click)="vote(post, 'up')" [disabled]="isLoading()">▲</button>
+          <button type="button" class="icon-btn" (click)="vote(post, 'upvote')" [disabled]="isLoading()">▲</button>
           <span class="vote-score">{{ post.score }}</span>
-          <button type="button" class="icon-btn" (click)="vote(post, 'down')" [disabled]="isLoading()">▼</button>
+          <button type="button" class="icon-btn" (click)="vote(post, 'downvote')" [disabled]="isLoading()">▼</button>
         </div>
 
         <div class="action-buttons">

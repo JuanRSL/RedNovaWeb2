@@ -1,6 +1,6 @@
 // post.service.ts
 import { Injectable, inject } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
+import { Observable, throwError, map } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { Post } from '../models/post.model';
@@ -20,8 +20,13 @@ export class PostService {
   }
 
   getPosts(page: number = 1, limit: number = 10): Observable<{ posts: Post[]; total: number }> {
-    return this.api.get<{ posts: Post[]; total: number }>(`/posts?page=${page}&limit=${limit}`)
-      .pipe(catchError(this.handleError));
+    return this.api.get<any>(`/posts?page=${page}&limit=${limit}`)
+      .pipe(
+        map(res => {
+          const data = Array.isArray(res) ? { posts: res, total: res.length } : res;
+          return this.normalizePostsResponse(data);
+        }),
+        catchError(this.handleError));
   }
 
   getPostById(id: string): Observable<Post> {
@@ -30,13 +35,34 @@ export class PostService {
   }
 
   getPostsBySubforum(subforumId: string, page: number = 1, limit: number = 10): Observable<{ posts: Post[]; total: number }> {
-    return this.api.get<{ posts: Post[]; total: number }>(`/posts/subforum/${subforumId}?page=${page}&limit=${limit}`)
-      .pipe(catchError(this.handleError));
+    return this.api.get<any>(`/posts/subforum/${subforumId}?page=${page}&limit=${limit}`)
+      .pipe(
+        map(res => {
+          const data = Array.isArray(res) ? { posts: res, total: res.length } : res;
+          return this.normalizePostsResponse(data);
+        }),
+        catchError(this.handleError));
   }
 
   getPostsByForum(forumId: string, page: number = 1, limit: number = 10): Observable<{ posts: Post[]; total: number }> {
-    return this.api.get<{ posts: Post[]; total: number }>(`/posts/forum/${forumId}?page=${page}&limit=${limit}`)
-      .pipe(catchError(this.handleError));
+    return this.api.get<any>(`/posts/forum/${forumId}?page=${page}&limit=${limit}`)
+      .pipe(
+        map(res => {
+          const data = Array.isArray(res) ? { posts: res, total: res.length } : res;
+          return this.normalizePostsResponse(data);
+        }),
+        catchError(this.handleError));
+  }
+
+  private normalizePostsResponse(data: { posts: any[], total: number }) {
+    return {
+      ...data,
+      posts: (data.posts || []).map(p => ({ 
+        ...p, 
+        id: p.id || p._id,
+        author: typeof p.author === 'object' ? { ...p.author, id: p.author?.id || p.author?._id } : p.author
+      }))
+    };
   }
 
   updatePost(id: string, postData: Partial<Post>): Observable<Post> {

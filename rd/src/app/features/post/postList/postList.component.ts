@@ -1,7 +1,7 @@
 // postList.component.ts
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
 import { PostService } from '../../../services/post.service';
 import { Post } from '../../../models/post.model';
@@ -21,19 +21,27 @@ export class PostListComponent implements OnInit {
 
   constructor(
     private postService: PostService, 
-    public authService: AuthService
+    public authService: AuthService,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit() {
-    this.loadPosts();
+    // Escuchar cambios en los parámetros de consulta (query params)
+    this.route.queryParams.subscribe(params => {
+      const forumId = params['forumId'];
+      this.loadPosts(1, 10, forumId);
+    });
   }
 
-  // ✅ CORREGIDO: Manejar la estructura de respuesta correcta
-  loadPosts(page: number = 1, limit: number = 10) {
+  loadPosts(page: number = 1, limit: number = 10, forumId?: string) {
     this.isLoading.set(true);
     this.error.set('');
 
-    this.postService.getPosts(page, limit).subscribe({
+    const obs$ = forumId 
+      ? this.postService.getPostsByForum(forumId, page, limit)
+      : this.postService.getPosts(page, limit);
+
+    obs$.subscribe({
       next: (response) => {
         // response tiene estructura: { posts: Post[], total: number }
         this.posts.set(response.posts);

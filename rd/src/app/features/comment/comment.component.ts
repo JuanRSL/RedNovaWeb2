@@ -219,10 +219,10 @@ submitReply(parentCommentId: string): void {
     if (!currentUserId) return false;
     
     const isAuthor = comment.author._id === currentUserId;
-    const isAdmin = comment.author.roles?.includes('admin') ?? false;
-    const isModerator = comment.author.roles?.includes('moderator') ?? false;
+    const isAdmin = !!currentUser.roles?.includes('admin');
+    const isModerator = !!currentUser.roles?.includes('moderator');
     
-    return isAuthor || isAdmin || isModerator;
+    return !!(isAuthor || isAdmin || isModerator);
   }
 
   changePage(page: number): void {

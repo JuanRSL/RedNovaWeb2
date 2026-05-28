@@ -14,8 +14,8 @@
     <div class="content">{{ post()?.content }}</div>
 
     <div class="actions">
-      <button type="button" (click)="vote('up')">Upvote</button>
-      <button type="button" (click)="vote('down')">Downvote</button>
+      <button type="button" (click)="vote('upvote')">Upvote</button>
+      <button type="button" (click)="vote('downvote')">Downvote</button>
       <span class="score">Score: {{ post()?.score ?? 0 }}</span>
     </div>
   </article>

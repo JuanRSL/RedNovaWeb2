@@ -119,7 +119,7 @@ export class PostFormComponent implements OnInit, OnDestroy {
 
     // Obtener el forumId del subforum seleccionado
     const selectedSubforumId = this.form.value.subforum || '';
-    const selectedSubforum = this.subforums().find(sf => sf._id === selectedSubforumId);
+    const selectedSubforum = this.subforums().find((sf: any) => sf._id === selectedSubforumId || sf.id === selectedSubforumId);
     
     if (!selectedSubforum) {
       this.error.set('Error: Subforo no encontrado');
@@ -127,7 +127,11 @@ export class PostFormComponent implements OnInit, OnDestroy {
       return;
     }
     
-    const forumId = selectedSubforum.forum;
+    // El forumId puede venir como string o como objeto dependiendo del backend
+    const forumData = selectedSubforum.forum as any;
+    const forumId = typeof forumData === 'object' && forumData !== null
+      ? (forumData.id || forumData._id)
+      : forumData;
     
     if (!forumId) {
       this.error.set('Error: El subforo seleccionado no tiene un foro asociado');
@@ -140,7 +144,7 @@ export class PostFormComponent implements OnInit, OnDestroy {
       title: this.form.value.title?.trim() || '',
       content: this.form.value.content?.trim() || '',
       author: {
-        id: currentUser._id || currentUser.id,
+        id: currentUser._id,
         username: currentUser.username
       },
       forum: forumId,
