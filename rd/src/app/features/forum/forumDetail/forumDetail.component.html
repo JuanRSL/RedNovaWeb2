@@ -1,0 +1,53 @@
+<div class="forum-detail-container">
+  @if (isLoading()) {
+    <div class="loading">Cargando foro...</div>
+  } @else if (error()) {
+    <div class="error-message">{{ error() }}</div>
+  } @else if (forum()) {
+    <div class="forum-header">
+      <div class="forum-info">
+        <h1>{{ forum()?.name }}</h1>
+        <p class="forum-slug">f/{{ forum()?.slug }}</p>
+        @if (forum()?.description) {
+          <p class="forum-description">{{ forum()?.description }}</p>
+        }
+        @if (forum()?.isPrivate) {
+          <span class="private-badge">Foro Privado</span>
+        }
+      </div>
+    </div>
+
+    <div class="forum-content">
+      <div class="subforums-section">
+        <h2>Subforos ({{ forum()?.subforums?.length || 0 }})</h2>
+        @if (forum()?.subforums?.length) {
+          <div class="subforum-grid">
+            @for (subforum of forum()?.subforums; track subforum._id) {
+              <a [routerLink]="['/r', subforum.slug]" class="subforum-card">
+                <h3>r/{{ subforum.name }}</h3>
+                @if (subforum.description) {
+                  <p>{{ subforum.description }}</p>
+                }
+              </a>
+            }
+          </div>
+        } @else {
+          <p class="empty-message">No hay subforos en este foro todavía.</p>
+        }
+      </div>
+
+      <div class="moderators-section">
+        <h2>Moderadores ({{ forum()?.moderators?.length || 0 }})</h2>
+        @if (forum()?.moderators?.length) {
+          <div class="moderator-list">
+            @for (moderator of forum()?.moderators; track moderator) {
+              <span class="moderator-badge">Moderador</span>
+            }
+          </div>
+        } @else {
+          <p class="empty-message">No hay moderadores asignados.</p>
+        }
+      </div>
+    </div>
+  }
+</div>

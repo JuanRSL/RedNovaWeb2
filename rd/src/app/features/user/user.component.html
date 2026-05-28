@@ -1,0 +1,180 @@
+<div class="profile-container">
+  <div class="profile-header">
+    <h1>Mi Perfil</h1>
+  </div>
+
+  @if (isLoading()) {
+    <div class="loading">Cargando perfil...</div>
+  } @else if (error() && !user()) {
+    <div class="error-message">{{ error() }}</div>
+  } @else if (user()) {
+    <div class="profile-tabs">
+      <button 
+        class="tab-button" 
+        [class.active]="activeTab() === 'profile'"
+        (click)="setActiveTab('profile')"
+      >
+        Perfil
+      </button>
+      <button 
+        class="tab-button" 
+        [class.active]="activeTab() === 'following'"
+        (click)="setActiveTab('following')"
+      >
+        Siguiendo
+      </button>
+    </div>
+
+    @if (activeTab() === 'profile') {
+      <div class="profile-card">
+        <div class="user-info">
+          <div class="user-avatar">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            </svg>
+          </div>
+          <div class="user-details">
+            <h2>{{ user()?.username }}</h2>
+            <p class="user-email">{{ user()?.email }}</p>
+            <div class="user-roles">
+              @for (role of user()?.roles; track role) {
+                <span class="role-badge">{{ role }}</span>
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-stats">
+          <div class="stat-item">
+            <span class="stat-value">{{ user()?.followingUsers?.length || 0 }}</span>
+            <span class="stat-label">Usuarios seguidos</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value">{{ user()?.followingSubforums?.length || 0 }}</span>
+            <span class="stat-label">Subforos seguidos</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value">{{ user()?.followingForums?.length || 0 }}</span>
+            <span class="stat-label">Foros seguidos</span>
+          </div>
+        </div>
+
+        <form [formGroup]="profileForm" (ngSubmit)="updateProfile()" class="profile-form">
+          <h3>Editar Perfil</h3>
+          
+          @if (successMessage()) {
+            <div class="message success">{{ successMessage() }}</div>
+          }
+          @if (error()) {
+            <div class="message error">{{ error() }}</div>
+          }
+
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input 
+              id="email" 
+              type="email" 
+              formControlName="email" 
+              placeholder="tu@email.com"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="currentPassword">Contraseña actual (requerida para cambios)</label>
+            <input 
+              id="currentPassword" 
+              type="password" 
+              formControlName="currentPassword" 
+              placeholder="Contraseña actual"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="newPassword">Nueva contraseña</label>
+            <input 
+              id="newPassword" 
+              type="password" 
+              formControlName="newPassword" 
+              placeholder="Nueva contraseña"
+            />
+            @if (profileForm.get('newPassword')?.invalid && profileForm.get('newPassword')?.touched) {
+              <span class="field-error">
+                La contraseña debe tener al menos 6 caracteres, una mayúscula y un número
+              </span>
+            }
+          </div>
+
+          <button 
+            type="submit" 
+            class="btn-save"
+            [disabled]="isUpdating() || profileForm.invalid"
+          >
+            @if (isUpdating()) {
+              Guardando...
+            } @else {
+              Guardar cambios
+            }
+          </button>
+        </form>
+      </div>
+    }
+
+    @if (activeTab() === 'following') {
+      <div class="following-section">
+        <div class="following-group">
+          <h3>Usuarios seguidos ({{ user()?.followingUsers?.length || 0 }})</h3>
+          @if (user()?.followingUsers?.length) {
+            <div class="following-list">
+              @for (userId of user()?.followingUsers; track userId) {
+                <div class="following-item">
+                  <span>Usuario {{ userId }}</span>
+                  <button (click)="unfollowUser(userId)" class="btn-unfollow">
+                    Dejar de seguir
+                  </button>
+                </div>
+              }
+            </div>
+          } @else {
+            <p class="empty-message">No sigues a ningún usuario.</p>
+          }
+        </div>
+
+        <div class="following-group">
+          <h3>Subforos seguidos ({{ user()?.followingSubforums?.length || 0 }})</h3>
+          @if (user()?.followingSubforums?.length) {
+            <div class="following-list">
+              @for (subforumId of user()?.followingSubforums; track subforumId) {
+                <div class="following-item">
+                  <span>Subforo {{ subforumId }}</span>
+                  <button (click)="unfollowSubforum(subforumId)" class="btn-unfollow">
+                    Dejar de seguir
+                  </button>
+                </div>
+              }
+            </div>
+          } @else {
+            <p class="empty-message">No sigues ningún subforo.</p>
+          }
+        </div>
+
+        <div class="following-group">
+          <h3>Foros seguidos ({{ user()?.followingForums?.length || 0 }})</h3>
+          @if (user()?.followingForums?.length) {
+            <div class="following-list">
+              @for (forumId of user()?.followingForums; track forumId) {
+                <div class="following-item">
+                  <span>Foro {{ forumId }}</span>
+                  <button (click)="unfollowForum(forumId)" class="btn-unfollow">
+                    Dejar de seguir
+                  </button>
+                </div>
+              }
+            </div>
+          } @else {
+            <p class="empty-message">No sigues ningún foro.</p>
+          }
+        </div>
+      </div>
+    }
+  }
+</div>

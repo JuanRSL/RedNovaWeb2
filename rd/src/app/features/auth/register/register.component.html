@@ -1,0 +1,28 @@
+<section class="page auth-page">
+  <h1>Register</h1>
+
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <label>
+      Username
+      <input formControlName="username" />
+    </label>
+
+    <label>
+      Email
+      <input type="email" formControlName="email" />
+    </label>
+
+    <label>
+      Password
+      <input type="password" formControlName="password" />
+    </label>
+
+    <button type="submit" [disabled]="form.invalid || isSubmitting()">Create account</button>
+
+    <p class="error" *ngIf="error()">{{ error() }}</p>
+
+    <p class="hint">
+      Already have an account? <a routerLink="/auth/login">Login</a>
+    </p>
+  </form>
+</section>

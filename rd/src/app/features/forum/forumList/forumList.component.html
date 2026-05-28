@@ -1,0 +1,32 @@
+<div class="forum-list-container">
+  <h1>Foros</h1>
+  
+  @if (isLoading()) {
+    <div class="loading">Cargando foros...</div>
+  } @else if (error()) {
+    <div class="error-message">{{ error() }}</div>
+  } @else if (forums().length === 0) {
+    <div class="empty-state">
+      <p>No hay foros disponibles todavía.</p>
+    </div>
+  } @else {
+    <div class="forum-grid">
+      @for (forum of forums(); track forum._id) {
+        <a [routerLink]="['/forums', forum._id]" class="forum-card">
+          <div class="forum-card-header">
+            <h2>{{ forum.name }}</h2>
+            @if (forum.isPrivate) {
+              <span class="private-badge">Privado</span>
+            }
+          </div>
+          <p class="forum-description">{{ forum.description || 'Sin descripción' }}</p>
+          <div class="forum-stats">
+            <span>{{ forum.subforums?.length || 0 }} subforos</span>
+            <span>{{ forum.moderators?.length || 0 }} moderadores</span>
+          </div>
+          <div class="forum-slug">f/{{ forum.slug }}</div>
+        </a>
+      }
+    </div>
+  }
+</div>

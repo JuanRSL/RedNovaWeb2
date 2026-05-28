@@ -1,0 +1,159 @@
+<div class="comments-section">
+  <!-- Comment Form -->
+  @if (isLoggedIn()) {
+    <div class="comment-form">
+      <h3>Leave a Comment</h3>
+      <form [formGroup]="commentForm" (ngSubmit)="submitComment()">
+        <textarea
+          formControlName="content"
+          placeholder="What are your thoughts?"
+          rows="4"
+          [class.error]="commentForm.get('content')?.invalid && commentForm.get('content')?.touched"
+        ></textarea>
+        @if (commentForm.get('content')?.invalid && commentForm.get('content')?.touched) {
+          <span class="field-error">Comment cannot be empty</span>
+        }
+        <div class="form-actions">
+          <button 
+            type="submit" 
+            [disabled]="commentForm.invalid || isSubmitting()"
+            class="btn-submit"
+          >
+            @if (isSubmitting()) {
+              Posting...
+            } @else {
+              Comment
+            }
+          </button>
+        </div>
+      </form>
+      @if (submitError()) {
+        <div class="error-message">{{ submitError() }}</div>
+      }
+    </div>
+  } @else {
+    <div class="login-prompt">
+      <a routerLink="/auth/login">Log in</a> to leave a comment
+    </div>
+  }
+
+  <!-- Comments List -->
+  <div class="comments-list">
+    <h3>
+      Comments 
+      @if (totalComments()) {
+        ({{ totalComments() }})
+      }
+    </h3>
+
+    @if (isLoading()) {
+      <div class="loading">Loading comments...</div>
+    } @else if (error()) {
+      <div class="error-message">{{ error() }}</div>
+    } @else if (comments().length === 0) {
+      <div class="empty-state">
+        <p>No comments yet. Be the first to share your thoughts!</p>
+      </div>
+    } @else {
+      @for (comment of comments(); track comment._id) {
+        <div class="comment" [class.is-reply]="comment.parentComment">
+          <div class="comment-header">
+            <span class="author">{{ comment.author.username }}</span>
+            <span class="date">{{ comment.createdAt | date:'medium' }}</span>
+          </div>
+          
+          <div class="comment-content">
+            <p>{{ comment.content }}</p>
+          </div>
+          
+          <div class="comment-actions">
+            <div class="vote-buttons">
+              <button 
+                (click)="upvoteComment(comment._id)"
+                class="btn-vote"
+                [class.active]="hasUpvoted(comment)"
+              >
+                ▲ {{ comment.upvotes.length }}
+              </button>
+              <button 
+                (click)="downvoteComment(comment._id)"
+                class="btn-vote"
+                [class.active]="hasDownvoted(comment)"
+              >
+                ▼ {{ comment.downvotes.length }}
+              </button>
+            </div>
+            
+            @if (isLoggedIn()) {
+              <button 
+                (click)="startReply(comment._id)"
+                class="btn-reply"
+              >
+                Reply
+              </button>
+            }
+            
+            @if (canDelete(comment)) {
+              <button 
+                (click)="deleteComment(comment._id)"
+                class="btn-delete"
+              >
+                Delete
+              </button>
+            }
+          </div>
+
+          <!-- Reply Form -->
+          @if (replyingTo() === comment._id) {
+            <div class="reply-form">
+              <form [formGroup]="replyForm" (ngSubmit)="submitReply(comment._id)">
+                <textarea
+                  formControlName="content"
+                  placeholder="Write a reply..."
+                  rows="3"
+                ></textarea>
+                <div class="reply-actions">
+                  <button 
+                    type="submit" 
+                    [disabled]="replyForm.invalid || isSubmitting()"
+                    class="btn-submit"
+                  >
+                    Reply
+                  </button>
+                  <button 
+                    type="button" 
+                    (click)="cancelReply()"
+                    class="btn-cancel"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Pagination -->
+      @if (totalPages() > 1) {
+        <div class="pagination">
+          <button 
+            (click)="changePage(currentPage() - 1)"
+            [disabled]="currentPage() === 1"
+            class="btn-page"
+          >
+            Previous
+          </button>
+          <span>Page {{ currentPage() }} of {{ totalPages() }}</span>
+          <button 
+            (click)="changePage(currentPage() + 1)"
+            [disabled]="currentPage() === totalPages()"
+            class="btn-page"
+          >
+            Next
+          </button>
+        </div>
+      }
+    }
+  </div>
+</div>

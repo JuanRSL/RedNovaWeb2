@@ -1,0 +1,22 @@
+<section class="page">
+  <a routerLink="/posts">← Back to posts</a>
+
+  <p class="error" *ngIf="error()">{{ error() }}</p>
+  <p *ngIf="isLoading()">Loading post…</p>
+
+  <article *ngIf="!isLoading() && post()" class="post-detail">
+    <h1>{{ post()?.title }}</h1>
+    <p class="meta">
+      <span>By {{ post()?.author?.username || 'Unknown' }}</span>
+      <span>{{ post()?.createdAt | date: 'medium' }}</span>
+      <span>{{ post()?.forum?.name || post()?.subforum?.name }}</span>
+    </p>
+    <div class="content">{{ post()?.content }}</div>
+
+    <div class="actions">
+      <button type="button" (click)="vote('up')">Upvote</button>
+      <button type="button" (click)="vote('down')">Downvote</button>
+      <span class="score">Score: {{ post()?.score ?? 0 }}</span>
+    </div>
+  </article>
+</section>
