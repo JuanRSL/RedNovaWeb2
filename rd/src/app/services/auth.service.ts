@@ -1,4 +1,3 @@
-// src/app/services/auth.service.ts
 import { Injectable, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, map, of, tap } from 'rxjs';
@@ -42,13 +41,13 @@ export class AuthService {
     }
 
     return this.api.get<User>('/usuarios/me').pipe(
-      map(user => ({ ...user, id: user.id || user._id })),
+      map(user => ({ ...user, id: user._id })), // Asegura que 'id' (opcional) siempre sea igual a '_id' (principal)
       tap(user => {
         this.currentUser.set(user);
-        console.log('✅ Sesión cargada:', user.username);
+        console.log('Sesión cargada:', user.username);
       }),
       catchError((error) => {
-        console.error('❌ Error cargando sesión:', error);
+        console.error('Error cargando sesión:', error);
         this.currentUser.set(null);
         return of(null);
       })

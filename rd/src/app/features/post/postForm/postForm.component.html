@@ -1,0 +1,35 @@
+<div class="form-card">
+	<h2>Nueva Publicación</h2>
+
+	<div *ngIf="isLoadingSubforums()">Cargando subforos...</div>
+	<div *ngIf="loadError()">
+		<p class="error">{{ error() }}</p>
+		<button (click)="retryLoadSubforums()">Reintentar</button>
+	</div>
+
+	<form [formGroup]="form" (ngSubmit)="submit()" *ngIf="!isLoadingSubforums() && !loadError()">
+		<label>
+			Título
+			<input formControlName="title" />
+		</label>
+
+		<label>
+			Contenido
+			<textarea formControlName="content" rows="6"></textarea>
+		</label>
+
+		<label>
+			Subforo
+			<select formControlName="subforum">
+				<option value="">-- Seleccione subforo --</option>
+				<option *ngFor="let s of subforums()" [value]="s.id">{{ s.name }}</option>
+			</select>
+		</label>
+
+		<div class="form-actions">
+			<button type="submit" [disabled]="form.invalid || isSubmitting()">Crear publicación</button>
+		</div>
+
+		<p class="error" *ngIf="error()">{{ error() }}</p>
+	</form>
+</div>

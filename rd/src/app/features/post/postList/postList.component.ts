@@ -1,3 +1,4 @@
+// postList.component.ts
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -16,20 +17,27 @@ export class PostListComponent implements OnInit {
   posts = signal<Post[]>([]);
   isLoading = signal(false);
   error = signal('');
+  totalPosts = signal(0);
 
-  constructor(private postService: PostService, public authService: AuthService) {}
+  constructor(
+    private postService: PostService, 
+    public authService: AuthService
+  ) {}
 
   ngOnInit() {
     this.loadPosts();
   }
 
-  loadPosts() {
+  // ✅ CORREGIDO: Manejar la estructura de respuesta correcta
+  loadPosts(page: number = 1, limit: number = 10) {
     this.isLoading.set(true);
     this.error.set('');
 
-    this.postService.getPosts().subscribe({
-      next: (posts) => {
-        this.posts.set(posts);
+    this.postService.getPosts(page, limit).subscribe({
+      next: (response) => {
+        // response tiene estructura: { posts: Post[], total: number }
+        this.posts.set(response.posts);
+        this.totalPosts.set(response.total);
         this.isLoading.set(false);
       },
       error: (err) => {
@@ -39,8 +47,9 @@ export class PostListComponent implements OnInit {
     });
   }
 
-  vote(post: Post, type: 'up' | 'down') {
-    const id = post.id || post.id;
+  // ✅ CORREGIDO: Cambiar tipo de 'up' | 'down' a 'upvote' | 'downvote'
+  vote(post: Post, type: 'upvote' | 'downvote') {
+    const id = post._id || post.id;
     if (!id) {
       return;
     }
@@ -48,7 +57,8 @@ export class PostListComponent implements OnInit {
     this.postService.votePost(id, type).subscribe({
       next: (result) => {
         const updated = this.posts().map((item) => {
-          if (item.id === post.id || item.id === post.id) {
+          const itemId = item._id || item.id;
+          if (itemId === id) {
             return { ...item, score: result.score };
           }
           return item;
@@ -61,12 +71,22 @@ export class PostListComponent implements OnInit {
     });
   }
 
+  // Método auxiliar para votar positivo desde el template
+  voteUp(post: Post) {
+    this.vote(post, 'upvote');
+  }
+
+  // Método auxiliar para votar negativo desde el template
+  voteDown(post: Post) {
+    this.vote(post, 'downvote');
+  }
+
   deletePost(post: Post) {
     if (!confirm('Are you sure you want to delete this post?')) {
       return;
     }
 
-    const id = post.id || post.id;
+    const id = post._id || post.id;
     if (!id) {
       return;
     }
@@ -79,16 +99,44 @@ export class PostListComponent implements OnInit {
     });
   }
 
-  canDelete(post: Post) {
+  canDelete(post: Post): boolean {
     const user = this.authService.currentUser();
     if (!user) {
       return false;
     }
 
-    const isAuthor = post.author?.username === user.username;
-    const isAdmin = user.roles?.includes('admin');
-    const isModerator = user.roles?.includes('moderator');
+    // Obtener el ID del autor
+    const authorId = typeof post.author === 'string' 
+      ? post.author 
+      : post.author?.id;
+    
+    const userId = user._id || user.id;
+    const isAuthor = authorId === userId;
+    const isAdmin = !!user.roles?.includes('admin');
+    const isModerator = !!user.roles?.includes('moderator');
 
-    return isAuthor || isAdmin || isModerator;
+    return !!(isAuthor || isAdmin || isModerator);
+  }
+
+  // Verificar si el usuario ya votó positivamente
+  hasUpvoted(post: Post): boolean {
+    const currentUser = this.authService.currentUser();
+    if (!currentUser) return false;
+    
+    const userId = currentUser._id || currentUser.id;
+    return post.upvotes?.includes(userId as string) || false;
+  }
+
+  // Verificar si el usuario ya votó negativamente
+  hasDownvoted(post: Post): boolean {
+    const currentUser = this.authService.currentUser();
+    if (!currentUser) return false;
+    
+    const userId = currentUser._id || currentUser.id;
+    return post.downvotes?.includes(userId as string) || false;
+  }
+
+  refreshPosts() {
+    this.loadPosts();
   }
 }

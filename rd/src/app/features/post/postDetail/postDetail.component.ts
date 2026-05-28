@@ -1,8 +1,10 @@
+// postDetail.component.ts
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CommentListComponent } from '../../comment/comment.component';
 import { PostService } from '../../../services/post.service';
+import { AuthService } from '../../../services/auth.service';
 import { Post } from '../../../models/post.model';
 
 @Component({
@@ -17,7 +19,11 @@ export class PostDetailComponent implements OnInit {
   error = signal('');
   isLoading = signal(true);
 
-  constructor(private route: ActivatedRoute, private postService: PostService) {}
+  constructor(
+    private route: ActivatedRoute, 
+    private postService: PostService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
@@ -42,13 +48,15 @@ export class PostDetailComponent implements OnInit {
     });
   }
 
-  vote(type: 'up' | 'down') {
+  // ✅ CORREGIDO: Cambiar tipo de 'up' | 'down' a 'upvote' | 'downvote'
+  vote(type: 'upvote' | 'downvote') {
     const currentPost = this.post();
     if (!currentPost) {
       return;
     }
 
-    const id = currentPost.id || currentPost.id;
+    // ✅ CORREGIDO: Usar _id o id correctamente
+    const id = currentPost._id || currentPost.id;
     if (!id) {
       return;
     }
@@ -57,7 +65,57 @@ export class PostDetailComponent implements OnInit {
       next: ({ score }) => {
         this.post.set({ ...currentPost, score });
       },
-      error: (err) => this.error.set(err?.error?.message || 'No se ha podido votar la publicacion.')
+      error: (err) => {
+        this.error.set(err?.error?.message || 'No se ha podido votar la publicacion.');
+      }
     });
+  }
+
+  // Método auxiliar para el template (si usas 'up'/'down' en el template)
+  voteUp() {
+    this.vote('upvote');
+  }
+
+  voteDown() {
+    this.vote('downvote');
+  }
+
+  // Verificar si el usuario actual puede editar/eliminar
+  canModify(): boolean {
+    const currentPost = this.post();
+    const currentUser = this.authService.currentUser();
+    
+    if (!currentPost || !currentUser) return false;
+    
+    const authorId = typeof currentPost.author === 'string' 
+      ? currentPost.author 
+      : currentPost.author?.id;
+    
+    const userId = currentUser._id || currentUser.id;
+    const isAuthor = authorId === userId;
+    const isAdmin = !!currentUser.roles?.includes('admin');
+    const isModerator = !!currentUser.roles?.includes('moderator');
+    
+    return !!(isAuthor || isAdmin || isModerator);
+  }
+
+  // Verificar si el usuario ya votó positivamente
+  hasUpvoted(): boolean {
+    const currentPost = this.post();
+    const currentUser = this.authService.currentUser();
+    if (!currentPost || !currentUser) return false;
+    
+    const userId = currentUser._id || currentUser.id;
+    return currentPost.upvotes?.includes(userId as string) || false;
+  }
+
+  // Verificar si el usuario ya votó negativamente
+  hasDownvoted(): boolean {
+    const currentPost = this.post();
+    const currentUser = this.authService.currentUser();
+    if (!currentPost || !currentUser) return false;
+    
+    const userId = currentUser._id || currentUser.id;
+    return currentPost.downvotes?.includes(userId as string) || false;
   }
 }

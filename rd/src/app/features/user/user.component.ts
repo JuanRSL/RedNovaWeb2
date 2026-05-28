@@ -116,7 +116,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   unfollowUser(userId: string) {
-    this.userService.followUser(userId)
+    this.userService.toggleFollowUser(userId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.loadProfile(),
@@ -127,7 +127,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   unfollowSubforum(subforumId: string) {
-    this.userService.followSubforum(subforumId)
+    this.userService.toggleFollowSubforum(subforumId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.loadProfile(),
@@ -138,7 +138,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   unfollowForum(forumId: string) {
-    this.userService.followForum(forumId)
+    this.userService.toggleFollowForum(forumId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.loadProfile(),

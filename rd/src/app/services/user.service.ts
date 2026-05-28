@@ -14,15 +14,15 @@ export class UserService {
   }
 
   // Follow / unfollow actions (backend should handle toggle semantics)
-  followUser(userId: string): Observable<any> {
-    return this.api.post(`/users/${userId}/follow`);
+  toggleFollowUser(userId: string): Observable<any> {
+    return this.api.post(`/users/${userId}/follow`, {});
   }
 
-  followSubforum(subforumId: string): Observable<any> {
-    return this.api.post(`/subforums/${subforumId}/follow`);
+  toggleFollowSubforum(subforumId: string): Observable<any> {
+    return this.api.post(`/subforums/${subforumId}/follow`, {});
   }
 
-  followForum(forumId: string): Observable<any> {
-    return this.api.post(`/forums/${forumId}/follow`);
+  toggleFollowForum(forumId: string): Observable<any> {
+    return this.api.post(`/forums/${forumId}/follow`, {});
   }
 }

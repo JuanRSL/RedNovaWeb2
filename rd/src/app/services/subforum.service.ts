@@ -1,6 +1,6 @@
 import { HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { ApiService } from './api.service';
 import { Subforum } from '../models/subforum.model';
 
@@ -10,15 +10,22 @@ import { Subforum } from '../models/subforum.model';
 export class SubforumService {
   private readonly api = inject(ApiService);
 
-  getSubforums(forumId?: string): Observable<Subforum[]> {
-    let params = new HttpParams();
-    if (forumId) {
-      params = params.set('forumId', forumId);
-    }
-    return this.api.get<Subforum[]>('/subforums', params);
+  // En el servicio SubforumService, puedes mapear la respuesta
+getSubforums(forumId?: string): Observable<Subforum[]> {
+  let params = new HttpParams();
+  if (forumId) {
+    params = params.set('forumId', forumId);
   }
+  return this.api.get<Subforum[]>('/subforums', params).pipe(
+    map(subforums => subforums.map(sf => ({
+      ...sf,
+      forum: (sf as any).forumId || sf.forum // Normalizar a 'forum'
+    })))
+  );
+}
 
   createSubforum(data: { name: string; slug?: string; description?: string; forumId: string }) {
     return this.api.post<{ message: string; subforum: Subforum }>('/subforums', data);
   }
+  
 }

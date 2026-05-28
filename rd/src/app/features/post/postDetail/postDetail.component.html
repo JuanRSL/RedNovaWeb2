@@ -22,6 +22,6 @@
   
   <!-- Comments -->
   <section *ngIf="post()">
-    <rn-comment-list [postId]="post()?.id || post()?.id"></rn-comment-list>
+    <rn-comment-list [postId]="post()?.id || post()?._id"></rn-comment-list>
   </section>
 </section>
