@@ -17,6 +17,16 @@
       <input type="password" formControlName="password" />
     </label>
 
+    <label *ngIf="currentUser()?.roles?.includes('admin')">
+      Rol de usuario
+      <select formControlName="role">
+        <option value="user">Usuario</option>
+        <option value="moderator">Moderador</option>
+        <option value="admin">Administrador</option>
+      </select>
+      <small>Solo administradores pueden asignar un rol.</small>
+    </label>
+
     <button type="submit" [disabled]="form.invalid || isSubmitting()">Crear cuenta</button>
 
     <p class="error" *ngIf="error()">{{ error() }}</p>

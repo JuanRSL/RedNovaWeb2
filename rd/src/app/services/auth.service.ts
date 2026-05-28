@@ -15,7 +15,7 @@ export class AuthService {
   currentUser = signal<User | null>(null);
 
   constructor() {
-    // ✅ Cargar la sesión cuando se crea el servicio
+    //Cargar la sesión cuando se crea el servicio
     this.loadSession().subscribe();
   }
 
@@ -25,7 +25,7 @@ export class AuthService {
     );
   }
 
-  register(userData: { username: string; email: string; password: string }) {
+  register(userData: { username: string; email: string; password: string; roles?: string[] }) {
     return this.api.post<AuthResponse>('/usuarios/register', userData).pipe(
       tap(res => this.saveSession(res))
     );

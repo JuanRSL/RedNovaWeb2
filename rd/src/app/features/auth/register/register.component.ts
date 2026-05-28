@@ -15,10 +15,15 @@ export class RegisterComponent {
   error = signal('');
   isSubmitting = signal(false);
 
+  get currentUser() {
+    return this.authService.currentUser;
+  }
+
   form = new FormGroup({
     username: new FormControl('', Validators.required),
     email: new FormControl('', [Validators.required, Validators.email]),
-    password: new FormControl('', [Validators.required, Validators.minLength(6)])
+    password: new FormControl('', [Validators.required, Validators.minLength(6)]),
+    role: new FormControl('user')
   });
 
   constructor(private authService: AuthService, private router: Router) {}
@@ -32,7 +37,18 @@ export class RegisterComponent {
     this.isSubmitting.set(true);
     this.error.set('');
 
-    this.authService.register(this.form.value as { username: string; email: string; password: string }).subscribe({
+    const formValue = this.form.value as { username: string; email: string; password: string; role: string };
+    const registerPayload: { username: string; email: string; password: string; roles?: string[] } = {
+      username: formValue.username,
+      email: formValue.email,
+      password: formValue.password
+    };
+
+    if (this.currentUser()?.roles?.includes('admin')) {
+      registerPayload.roles = [formValue.role || 'user'];
+    }
+
+    this.authService.register(registerPayload).subscribe({
       next: () => {
         this.router.navigate(['/posts']);
       },
