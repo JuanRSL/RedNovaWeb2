@@ -1,9 +1,10 @@
-import { Component, Input, OnInit, signal, inject } from '@angular/core';
+// src/app/features/comment/comment.component.ts
+import { Component, Input, OnInit, signal, inject, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommentService } from '../../services/comment.service';
 import { AuthService } from '../../services/auth.service';
-import { Comment, CreateCommentRequest } from '../../models/comment.model';
+import { Comment, CreateCommentRequest, CommentsResponse } from '../../models/comment.model';
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({
@@ -13,7 +14,7 @@ import { Subject, takeUntil } from 'rxjs';
   templateUrl: './comment.component.html',
   styleUrls: ['./comment.component.css']
 })
-export class CommentListComponent implements OnInit {
+export class CommentListComponent implements OnInit, OnDestroy {
   @Input() postId!: string;
 
   private commentService = inject(CommentService);
@@ -21,151 +22,173 @@ export class CommentListComponent implements OnInit {
   private destroy$ = new Subject<void>();
 
   comments = signal<Comment[]>([]);
-  totalComments = signal(0);
-  currentPage = signal(1);
-  totalPages = signal(1);
-  isLoading = signal(false);
-  error = signal('');
-  isSubmitting = signal(false);
-  submitError = signal('');
+  totalComments = signal<number>(0);
+  currentPage = signal<number>(1);
+  totalPages = signal<number>(1);
+  isLoading = signal<boolean>(false);
+  error = signal<string>('');
+  isSubmitting = signal<boolean>(false);
+  submitError = signal<string>('');
   replyingTo = signal<string | null>(null);
-  isLoggedIn = signal(false);
+  isLoggedIn = signal<boolean>(false);
 
   commentForm = new FormGroup({
-    content: new FormControl('', Validators.required)
+    content: new FormControl<string>('', { nonNullable: true, validators: Validators.required })
   });
 
   replyForm = new FormGroup({
-    content: new FormControl('', Validators.required)
+    content: new FormControl<string>('', { nonNullable: true, validators: Validators.required })
   });
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.isLoggedIn.set(!!this.authService.getToken());
     this.loadComments();
   }
 
-  loadComments() {
+  loadComments(): void {
     this.isLoading.set(true);
     this.error.set('');
 
     this.commentService.getCommentsByPost(this.postId, this.currentPage(), 20)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (response) => {
+        next: (response: CommentsResponse): void => {
           this.comments.set(response.comments);
           this.totalComments.set(response.totalComments);
           this.totalPages.set(response.totalPages);
           this.isLoading.set(false);
         },
-        error: (err) => {
-          this.error.set('Failed to load comments');
+        error: (err: Error | any): void => {
+          console.error('Error loading comments:', err);
+          this.error.set('Error al cargar comentarios');
           this.isLoading.set(false);
         }
       });
   }
 
-  submitComment() {
-    if (this.commentForm.invalid) return;
+submitComment(): void {
+  if (this.commentForm.invalid) return;
 
-    this.isSubmitting.set(true);
-    this.submitError.set('');
+  this.isSubmitting.set(true);
+  this.submitError.set('');
 
-    const request: CreateCommentRequest = {
-      content: this.commentForm.value.content || '',
-      postId: this.postId
-    };
-
-    this.commentService.createComment(request)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: () => {
-          this.commentForm.reset();
-          this.isSubmitting.set(false);
-          this.loadComments();
-        },
-        error: (err) => {
-          this.submitError.set(err?.error?.message || 'Failed to post comment');
-          this.isSubmitting.set(false);
-        }
-      });
+  //Asegurar que content sea string, nunca undefined
+  const content = this.commentForm.value.content || '';
+  
+  if (!content.trim()) {
+    this.submitError.set('El comentario no puede estar vacío');
+    this.isSubmitting.set(false);
+    return;
   }
 
-  startReply(commentId: string) {
+  const request: CreateCommentRequest = {
+    content: content,  //Ahora es string, no string | undefined
+    postId: this.postId
+  };
+
+  this.commentService.createComment(request)
+    .pipe(takeUntil(this.destroy$))
+    .subscribe({
+      next: (): void => {
+        this.commentForm.reset();
+        this.isSubmitting.set(false);
+        this.loadComments();
+      },
+      error: (err: Error | any): void => {
+        console.error('Error creating comment:', err);
+        this.submitError.set(err?.error?.message || 'Error al publicar comentario');
+        this.isSubmitting.set(false);
+      }
+    });
+}
+
+submitReply(parentCommentId: string): void {
+  if (this.replyForm.invalid) return;
+
+  this.isSubmitting.set(true);
+  this.submitError.set('');
+
+  // ✅ Asegurar que content sea string, nunca undefined
+  const content = this.replyForm.value.content || '';
+  
+  if (!content.trim()) {
+    this.submitError.set('La respuesta no puede estar vacía');
+    this.isSubmitting.set(false);
+    return;
+  }
+
+  const request: CreateCommentRequest = {
+    content: content,  // ← Ahora es string, no string | undefined
+    postId: this.postId,
+    parentComment: parentCommentId
+  };
+
+  this.commentService.createComment(request)
+    .pipe(takeUntil(this.destroy$))
+    .subscribe({
+      next: (): void => {
+        this.replyForm.reset();
+        this.isSubmitting.set(false);
+        this.replyingTo.set(null);
+        this.loadComments();
+      },
+      error: (err: Error | any): void => {
+        console.error('Error creating reply:', err);
+        this.submitError.set(err?.error?.message || 'Error al publicar respuesta');
+        this.isSubmitting.set(false);
+      }
+    });
+}
+ 
+
+  startReply(commentId: string): void {
     this.replyingTo.set(commentId);
     this.replyForm.reset();
   }
 
-  cancelReply() {
+  cancelReply(): void {
     this.replyingTo.set(null);
     this.replyForm.reset();
   }
 
-  submitReply(parentCommentId: string) {
-    if (this.replyForm.invalid) return;
-
-    this.isSubmitting.set(true);
-    this.submitError.set('');
-
-    const request: CreateCommentRequest = {
-      content: this.replyForm.value.content || '',
-      postId: this.postId,
-      parentComment: parentCommentId
-    };
-
-    this.commentService.createComment(request)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: () => {
-          this.replyForm.reset();
-          this.isSubmitting.set(false);
-          this.replyingTo.set(null);
-          this.loadComments();
-        },
-        error: (err) => {
-          this.submitError.set(err?.error?.message || 'Failed to post reply');
-          this.isSubmitting.set(false);
-        }
-      });
-  }
-
-  upvoteComment(commentId: string) {
+  upvoteComment(commentId: string): void {
     this.commentService.upvoteComment(commentId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: () => this.loadComments(),
-        error: (err) => console.error('Failed to upvote:', err)
+        next: (): void => this.loadComments(),
+        error: (err: Error | any): void => console.error('Error al dar upvote:', err)
       });
   }
 
-  downvoteComment(commentId: string) {
+  downvoteComment(commentId: string): void {
     this.commentService.downvoteComment(commentId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: () => this.loadComments(),
-        error: (err) => console.error('Failed to downvote:', err)
+        next: (): void => this.loadComments(),
+        error: (err: Error | any): void => console.error('Error al dar downvote:', err)
       });
   }
 
-  deleteComment(commentId: string) {
-    if (confirm('Are you sure you want to delete this comment?')) {
+  deleteComment(commentId: string): void {
+    if (confirm('¿Estás seguro de eliminar este comentario?')) {
       this.commentService.deleteComment(commentId)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
-          next: () => this.loadComments(),
-          error: (err) => console.error('Failed to delete:', err)
+          next: (): void => this.loadComments(),
+          error: (err: Error | any): void => console.error('Error al eliminar:', err)
         });
     }
   }
 
   hasUpvoted(comment: Comment): boolean {
     const currentUser = this.authService.currentUser();
-    const currentUserId = currentUser?._id ?? currentUser?.id;
+    const currentUserId = currentUser?._id;
     return currentUserId ? comment.upvotes.includes(currentUserId) : false;
   }
 
   hasDownvoted(comment: Comment): boolean {
     const currentUser = this.authService.currentUser();
-    const currentUserId = currentUser?._id ?? currentUser?.id;
+    const currentUserId = currentUser?._id;
     return currentUserId ? comment.downvotes.includes(currentUserId) : false;
   }
 
@@ -173,22 +196,24 @@ export class CommentListComponent implements OnInit {
     const currentUser = this.authService.currentUser();
     if (!currentUser) return false;
 
-    const currentUserId = currentUser._id ?? currentUser.id;
+    const currentUserId = currentUser._id;
     if (!currentUserId) return false;
     
     const isAuthor = comment.author._id === currentUserId;
-    const isAdmin = !!currentUser.roles?.includes('admin');
-    const isModerator = !!currentUser.roles?.includes('moderator');
+    const isAdmin = comment.author.roles?.includes('admin') ?? false;
+    const isModerator = comment.author.roles?.includes('moderator') ?? false;
     
-    return !!(isAuthor || isAdmin || isModerator);
+    return isAuthor || isAdmin || isModerator;
   }
 
-  changePage(page: number) {
-    this.currentPage.set(page);
-    this.loadComments();
+  changePage(page: number): void {
+    if (page >= 1 && page <= this.totalPages()) {
+      this.currentPage.set(page);
+      this.loadComments();
+    }
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }

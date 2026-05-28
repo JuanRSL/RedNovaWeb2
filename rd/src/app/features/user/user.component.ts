@@ -10,8 +10,8 @@ import { Subject, takeUntil } from 'rxjs';
   selector: 'rn-profile',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './profile.component.html',
-  styleUrls: ['./profile.component.css']
+  templateUrl: './user.component.html',
+  styleUrls: ['./user.component.css']
 })
 export class ProfileComponent implements OnInit {
   private userService = inject(UserService);

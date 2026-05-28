@@ -1,3 +1,4 @@
+// src/app/models/comment.model.ts
 export interface Comment {
   _id: string;
   content: string;
@@ -6,7 +7,7 @@ export interface Comment {
     username: string;
     roles?: string[];
   };
-  post: string;
+  post: string;                    
   parentComment: string | null;
   upvotes: string[];
   downvotes: string[];
@@ -22,7 +23,7 @@ export interface CommentsResponse {
 
 export interface CreateCommentRequest {
   content: string;
-  postId: string;
+  postId: string;                  
   parentComment?: string;
 }
 

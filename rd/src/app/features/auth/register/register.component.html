@@ -1,9 +1,9 @@
 <section class="page auth-page">
-  <h1>Register</h1>
+  <h1>Registrate</h1>
 
   <form [formGroup]="form" (ngSubmit)="submit()">
     <label>
-      Username
+      Nombre de usuario
       <input formControlName="username" />
     </label>
 
@@ -13,16 +13,16 @@
     </label>
 
     <label>
-      Password
+      Contraseña
       <input type="password" formControlName="password" />
     </label>
 
-    <button type="submit" [disabled]="form.invalid || isSubmitting()">Create account</button>
+    <button type="submit" [disabled]="form.invalid || isSubmitting()">Crear cuenta</button>
 
     <p class="error" *ngIf="error()">{{ error() }}</p>
 
     <p class="hint">
-      Already have an account? <a routerLink="/auth/login">Login</a>
+      ¿Ya tienes una cuenta? <a routerLink="/auth/login">Iniciar sesión</a>
     </p>
   </form>
 </section>
