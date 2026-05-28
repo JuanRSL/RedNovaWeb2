@@ -19,4 +19,9 @@
       <span class="score">Score: {{ post()?.score ?? 0 }}</span>
     </div>
   </article>
+  
+  <!-- Comments -->
+  <section *ngIf="post()">
+    <rn-comment-list [postId]="post()?.id || post()?.id"></rn-comment-list>
+  </section>
 </section>

@@ -1,13 +1,14 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { CommentListComponent } from '../../comment/comment.component';
 import { PostService } from '../../../services/post.service';
 import { Post } from '../../../models/post.model';
 
 @Component({
   selector: 'rn-post-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, CommentListComponent],
   templateUrl: './postDetail.component.html',
   styleUrls: ['./postDetail.component.css']
 })

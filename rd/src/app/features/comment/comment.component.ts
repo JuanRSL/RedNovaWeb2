@@ -15,7 +15,7 @@ import { Subject, takeUntil } from 'rxjs';
   styleUrls: ['./comment.component.css']
 })
 export class CommentListComponent implements OnInit, OnDestroy {
-  @Input() postId!: string;
+  @Input() postId!: string | undefined;
 
   private commentService = inject(CommentService);
   private authService = inject(AuthService);
@@ -48,6 +48,13 @@ export class CommentListComponent implements OnInit, OnDestroy {
   loadComments(): void {
     this.isLoading.set(true);
     this.error.set('');
+    if (!this.postId) {
+      this.comments.set([]);
+      this.totalComments.set(0);
+      this.totalPages.set(1);
+      this.isLoading.set(false);
+      return;
+    }
 
     this.commentService.getCommentsByPost(this.postId, this.currentPage(), 20)
       .pipe(takeUntil(this.destroy$))
@@ -77,6 +84,12 @@ submitComment(): void {
   
   if (!content.trim()) {
     this.submitError.set('El comentario no puede estar vacío');
+    this.isSubmitting.set(false);
+    return;
+  }
+
+  if (!this.postId) {
+    this.submitError.set('No se encontró la publicación para comentar.');
     this.isSubmitting.set(false);
     return;
   }
@@ -113,6 +126,12 @@ submitReply(parentCommentId: string): void {
   
   if (!content.trim()) {
     this.submitError.set('La respuesta no puede estar vacía');
+    this.isSubmitting.set(false);
+    return;
+  }
+
+  if (!this.postId) {
+    this.submitError.set('No se encontró la publicación para responder.');
     this.isSubmitting.set(false);
     return;
   }
