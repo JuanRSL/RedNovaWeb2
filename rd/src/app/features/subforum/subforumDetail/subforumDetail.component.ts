@@ -25,24 +25,37 @@ export class SubforumDetailComponent implements OnInit {
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.loadSubforum(id);
+    const slug = this.route.snapshot.paramMap.get('slug');
+    const key = id || slug;
+    if (key) {
+      this.loadSubforum(key);
     }
   }
 
   loadSubforum(id: string) {
     this.isLoading.set(true);
-    this.subforumService.getSubforumById(id)
-      .pipe(finalize(() => this.isLoading.set(false)))
-      .subscribe({
-        next: (sf) => {
-          this.subforum.set(sf);
-          // Aquí podrías cargar también los posts filtrados por este subforo
-          // this.postService.getPostsBySubforum(id).subscribe(posts => this.posts.set(posts));
-        },
-        error: () => {
-          this.error.set('No se pudo cargar la información del subforo.');
-        }
-      });
+    this.subforumService.getSubforumById(id).subscribe({
+      next: (sf) => {
+        this.subforum.set(sf);
+        this.isLoading.set(false);
+      },
+      error: () => {
+        // Si falló por ID, intentamos buscar por slug
+        this.subforumService.getSubforumBySlug(id).subscribe({
+          next: (sf) => {
+            if (sf) {
+              this.subforum.set(sf);
+            } else {
+              this.error.set('No se encontró el subforo.');
+            }
+            this.isLoading.set(false);
+          },
+          error: () => {
+            this.error.set('No se pudo cargar la información del subforo.');
+            this.isLoading.set(false);
+          }
+        });
+      }
+    });
   }
 }

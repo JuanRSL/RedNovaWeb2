@@ -32,4 +32,11 @@ getSubforums(forumId?: string): Observable<Subforum[]> {
     return this.api.get<Subforum>(`/subforums/${id}`);
   }
 
+  getSubforumBySlug(slug: string): Observable<Subforum | null> {
+    let params = new HttpParams().set('slug', slug);
+    return this.api.get<Subforum[]>('/subforums', params).pipe(
+      map(subforums => subforums && subforums.length ? subforums[0] : null)
+    );
+  }
+
 }
