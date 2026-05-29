@@ -236,4 +236,11 @@ submitReply(parentCommentId: string): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
+  topLevelComments() {
+  return this.comments().filter(c => !c.parentComment);
+}
+
+getReplies(commentId: string) {
+  return this.comments().filter(c => c.parentComment === commentId);
+}
 }
