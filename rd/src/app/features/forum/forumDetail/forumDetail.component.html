@@ -43,7 +43,7 @@
         @if (forum()?.moderators?.length) {
           <div class="moderator-list">
             @for (mod of forum()?.moderators; track mod) {
-              <span class="moderator-badge">{{ mod?.username || mod }}</span>
+              <span class="moderator-badge">{{ mod }}</span>
             }
           </div>
         } @else {

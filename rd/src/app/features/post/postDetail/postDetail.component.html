@@ -28,4 +28,12 @@
         <button class="vote-btn" type="button" (click)="vote('upvote')" [class.active]="hasUpvoted()">▲</button>
         <span class="vote-score">{{ post()?.score ?? 0 }}</span>
         <span class="score-label">puntos</span>
-        <button class="vote-btn" type="button" (click)="vote('dow
+        <button class="vote-btn" type="button" (click)="vote('downvote')" [class.active]="hasDownvoted()">▼</button>
+      </div>
+    </div>
+  </article>
+
+  <section *ngIf="post()">
+    <rn-comment-list [postId]="post()?._id || post()?.id"></rn-comment-list>
+  </section>
+</div>
