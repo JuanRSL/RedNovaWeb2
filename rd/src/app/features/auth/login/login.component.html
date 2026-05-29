@@ -1,23 +1,37 @@
-<section class="page auth-page">
-  <h1>Iniciar sesión</h1>
+<section class="auth-page">
+  <div class="auth-card">
 
-  <form [formGroup]="form" (ngSubmit)="submit()">
-    <label>
-      Usuario o correo electrónico
-      <input formControlName="identifier" />
-    </label>
+    <div class="auth-header">
+      <a class="auth-logo">RedNova</a>
+      <h1>Iniciar sesión</h1>
+      <p>Bienvenido de nuevo</p>
+    </div>
 
-    <label>
-      Contraseña
-      <input type="password" formControlName="password" />
-    </label>
+    <div class="auth-body">
+      <form [formGroup]="form" (ngSubmit)="submit()">
 
-    <button type="submit" [disabled]="form.invalid || isSubmitting()">Iniciar sesión</button>
+        <label>
+          Usuario o correo electrónico
+          <input formControlName="identifier" placeholder="tu@email.com" />
+        </label>
 
-    <p class="error" *ngIf="error()">{{ error() }}</p>
+        <label>
+          Contraseña
+          <input type="password" formControlName="password" placeholder="••••••••" />
+        </label>
 
-    <p class="hint">
-      ¿No tienes una cuenta? <a routerLink="/auth/register">Registrate</a>
-    </p>
-  </form>
+        <button type="submit" [disabled]="form.invalid || isSubmitting()">
+          Iniciar sesión
+        </button>
+
+        <p class="error" *ngIf="error()">{{ error() }}</p>
+
+      </form>
+    </div>
+
+    <div class="auth-footer">
+      <p>¿No tienes una cuenta? <a routerLink="/auth/register">Regístrate</a></p>
+    </div>
+
+  </div>
 </section>

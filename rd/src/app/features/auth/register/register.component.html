@@ -1,38 +1,52 @@
-<section class="page auth-page">
-  <h1>Registrate</h1>
+<section class="auth-page">
+  <div class="auth-card">
 
-  <form [formGroup]="form" (ngSubmit)="submit()">
-    <label>
-      Nombre de usuario
-      <input formControlName="username" />
-    </label>
+    <div class="auth-header">
+      <a class="auth-logo">RedNova</a>
+      <h1>Crear cuenta</h1>
+      <p>Únete a la comunidad</p>
+    </div>
 
-    <label>
-      Email
-      <input type="email" formControlName="email" />
-    </label>
+    <div class="auth-body">
+      <form [formGroup]="form" (ngSubmit)="submit()">
 
-    <label>
-      Contraseña
-      <input type="password" formControlName="password" />
-    </label>
+        <label>
+          Nombre de usuario
+          <input formControlName="username" placeholder="usuario123" />
+        </label>
 
-    <label *ngIf="currentUser()?.roles?.includes('admin')">
-      Rol de usuario
-      <select formControlName="role">
-        <option value="user">Usuario</option>
-        <option value="moderator">Moderador</option>
-        <option value="admin">Administrador</option>
-      </select>
-      <small>Solo administradores pueden asignar un rol.</small>
-    </label>
+        <label>
+          Email
+          <input type="email" formControlName="email" placeholder="tu@email.com" />
+        </label>
 
-    <button type="submit" [disabled]="form.invalid || isSubmitting()">Crear cuenta</button>
+        <label>
+          Contraseña
+          <input type="password" formControlName="password" placeholder="••••••••" />
+        </label>
 
-    <p class="error" *ngIf="error()">{{ error() }}</p>
+        <label *ngIf="currentUser()?.roles?.includes('admin')">
+          Rol de usuario
+          <select formControlName="role">
+            <option value="user">Usuario</option>
+            <option value="moderator">Moderador</option>
+            <option value="admin">Administrador</option>
+          </select>
+          <small>Solo administradores pueden asignar un rol.</small>
+        </label>
 
-    <p class="hint">
-      ¿Ya tienes una cuenta? <a routerLink="/auth/login">Iniciar sesión</a>
-    </p>
-  </form>
+        <button type="submit" [disabled]="form.invalid || isSubmitting()">
+          Crear cuenta
+        </button>
+
+        <p class="error" *ngIf="error()">{{ error() }}</p>
+
+      </form>
+    </div>
+
+    <div class="auth-footer">
+      <p>¿Ya tienes una cuenta? <a routerLink="/auth/login">Iniciar sesión</a></p>
+    </div>
+
+  </div>
 </section>
