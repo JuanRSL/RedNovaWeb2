@@ -24,7 +24,7 @@ getSubforums(forumId?: string): Observable<Subforum[]> {
   );
 }
 
-  createSubforum(data: { name: string; slug?: string; description?: string; forumId: string }) {
+  createSubforum(data: { name: string; slug?: string; description?: string; forum: string; author?: any }) {
     return this.api.post<{ message: string; subforum: Subforum }>('/subforums', data);
   }
   

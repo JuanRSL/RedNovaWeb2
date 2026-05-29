@@ -17,5 +17,6 @@ export interface CreateSubforumDto {
   name: string;
   slug?: string;
   description?: string;
-  forumId: string; 
+  forum: string; 
+  author?: { id: string; username: string };
 }
