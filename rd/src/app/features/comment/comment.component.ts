@@ -1,4 +1,3 @@
-// src/app/features/comment/comment.component.ts
 import { Component, Input, OnInit, signal, inject, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -65,104 +64,89 @@ export class CommentListComponent implements OnInit, OnDestroy {
           this.totalPages.set(response.totalPages);
           this.isLoading.set(false);
         },
-        error: (err: Error | any): void => {
-          console.error('Error loading comments:', err);
+        error: (err: any): void => {
           this.error.set('Error al cargar comentarios');
           this.isLoading.set(false);
         }
       });
   }
 
-submitComment(): void {
-  if (this.commentForm.invalid) return;
+  submitComment(): void {
+    if (this.commentForm.invalid) return;
+    this.isSubmitting.set(true);
+    this.submitError.set('');
 
-  this.isSubmitting.set(true);
-  this.submitError.set('');
+    const content = this.commentForm.value.content || '';
+    if (!content.trim()) {
+      this.submitError.set('El comentario no puede estar vacío');
+      this.isSubmitting.set(false);
+      return;
+    }
+    if (!this.postId) {
+      this.submitError.set('No se encontró la publicación.');
+      this.isSubmitting.set(false);
+      return;
+    }
 
-  //Asegurar que content sea string, nunca undefined
-  const content = this.commentForm.value.content || '';
-  
-  if (!content.trim()) {
-    this.submitError.set('El comentario no puede estar vacío');
-    this.isSubmitting.set(false);
-    return;
+    const request: CreateCommentRequest = { content, postId: this.postId };
+
+    this.commentService.createComment(request)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (): void => {
+          this.commentForm.reset();
+          this.isSubmitting.set(false);
+          this.loadComments();
+        },
+        error: (err: any): void => {
+          this.submitError.set(err?.error?.message || 'Error al publicar comentario');
+          this.isSubmitting.set(false);
+        }
+      });
   }
 
-  if (!this.postId) {
-    this.submitError.set('No se encontró la publicación para comentar.');
-    this.isSubmitting.set(false);
-    return;
+  submitReply(parentCommentId: string): void {
+    if (this.replyForm.invalid) return;
+    this.isSubmitting.set(true);
+    this.submitError.set('');
+
+    const content = this.replyForm.value.content || '';
+    if (!content.trim()) {
+      this.submitError.set('La respuesta no puede estar vacía');
+      this.isSubmitting.set(false);
+      return;
+    }
+    if (!this.postId) {
+      this.submitError.set('No se encontró la publicación.');
+      this.isSubmitting.set(false);
+      return;
+    }
+
+    const request: CreateCommentRequest = { content, postId: this.postId, parentComment: parentCommentId };
+
+    this.commentService.createComment(request)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (): void => {
+          this.replyForm.reset();
+          this.isSubmitting.set(false);
+          this.replyingTo.set(null);
+          this.loadComments();
+        },
+        error: (err: any): void => {
+          this.submitError.set(err?.error?.message || 'Error al publicar respuesta');
+          this.isSubmitting.set(false);
+        }
+      });
   }
-
-  const request: CreateCommentRequest = {
-    content: content,  //Ahora es string, no string | undefined
-    postId: this.postId
-  };
-
-  this.commentService.createComment(request)
-    .pipe(takeUntil(this.destroy$))
-    .subscribe({
-      next: (): void => {
-        this.commentForm.reset();
-        this.isSubmitting.set(false);
-        this.loadComments();
-      },
-      error: (err: Error | any): void => {
-        console.error('Error creating comment:', err);
-        this.submitError.set(err?.error?.message || 'Error al publicar comentario');
-        this.isSubmitting.set(false);
-      }
-    });
-}
-
-submitReply(parentCommentId: string): void {
-  if (this.replyForm.invalid) return;
-
-  this.isSubmitting.set(true);
-  this.submitError.set('');
-
-  // ✅ Asegurar que content sea string, nunca undefined
-  const content = this.replyForm.value.content || '';
-  
-  if (!content.trim()) {
-    this.submitError.set('La respuesta no puede estar vacía');
-    this.isSubmitting.set(false);
-    return;
-  }
-
-  if (!this.postId) {
-    this.submitError.set('No se encontró la publicación para responder.');
-    this.isSubmitting.set(false);
-    return;
-  }
-
-  const request: CreateCommentRequest = {
-    content: content,  // ← Ahora es string, no string | undefined
-    postId: this.postId,
-    parentComment: parentCommentId
-  };
-
-  this.commentService.createComment(request)
-    .pipe(takeUntil(this.destroy$))
-    .subscribe({
-      next: (): void => {
-        this.replyForm.reset();
-        this.isSubmitting.set(false);
-        this.replyingTo.set(null);
-        this.loadComments();
-      },
-      error: (err: Error | any): void => {
-        console.error('Error creating reply:', err);
-        this.submitError.set(err?.error?.message || 'Error al publicar respuesta');
-        this.isSubmitting.set(false);
-      }
-    });
-}
- 
 
   startReply(commentId: string): void {
     this.replyingTo.set(commentId);
     this.replyForm.reset();
+    setTimeout(() => {
+      const el = document.getElementById('reply-form-' + commentId);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 50);
   }
 
   cancelReply(): void {
@@ -175,7 +159,7 @@ submitReply(parentCommentId: string): void {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (): void => this.loadComments(),
-        error: (err: Error | any): void => console.error('Error al dar upvote:', err)
+        error: (err: any): void => console.error('Error upvote:', err)
       });
   }
 
@@ -184,7 +168,7 @@ submitReply(parentCommentId: string): void {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (): void => this.loadComments(),
-        error: (err: Error | any): void => console.error('Error al dar downvote:', err)
+        error: (err: any): void => console.error('Error downvote:', err)
       });
   }
 
@@ -194,35 +178,27 @@ submitReply(parentCommentId: string): void {
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: (): void => this.loadComments(),
-          error: (err: Error | any): void => console.error('Error al eliminar:', err)
+          error: (err: any): void => console.error('Error eliminar:', err)
         });
     }
   }
 
   hasUpvoted(comment: Comment): boolean {
-    const currentUser = this.authService.currentUser();
-    const currentUserId = currentUser?._id;
-    return currentUserId ? comment.upvotes.includes(currentUserId) : false;
+    const id = this.authService.currentUser()?._id;
+    return id ? comment.upvotes.includes(id) : false;
   }
 
   hasDownvoted(comment: Comment): boolean {
-    const currentUser = this.authService.currentUser();
-    const currentUserId = currentUser?._id;
-    return currentUserId ? comment.downvotes.includes(currentUserId) : false;
+    const id = this.authService.currentUser()?._id;
+    return id ? comment.downvotes.includes(id) : false;
   }
 
   canDelete(comment: Comment): boolean {
-    const currentUser = this.authService.currentUser();
-    if (!currentUser) return false;
-
-    const currentUserId = currentUser._id;
-    if (!currentUserId) return false;
-    
-    const isAuthor = comment.author._id === currentUserId;
-    const isAdmin = !!currentUser.roles?.includes('admin');
-    const isModerator = !!currentUser.roles?.includes('moderator');
-    
-    return !!(isAuthor || isAdmin || isModerator);
+    const user = this.authService.currentUser();
+    if (!user?._id) return false;
+    return comment.author._id === user._id
+      || !!user.roles?.includes('admin')
+      || !!user.roles?.includes('moderator');
   }
 
   changePage(page: number): void {
@@ -232,15 +208,16 @@ submitReply(parentCommentId: string): void {
     }
   }
 
+  topLevelComments(): Comment[] {
+    return this.comments().filter(c => !c.parentComment);
+  }
+
+  getReplies(commentId: string): Comment[] {
+    return this.comments().filter(c => c.parentComment === commentId);
+  }
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
-  topLevelComments() {
-  return this.comments().filter(c => !c.parentComment);
-}
-
-getReplies(commentId: string) {
-  return this.comments().filter(c => c.parentComment === commentId);
-}
 }

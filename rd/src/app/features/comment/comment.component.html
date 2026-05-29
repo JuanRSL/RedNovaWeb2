@@ -1,6 +1,5 @@
 <div class="comments-section">
 
-  <!-- Formulario principal -->
   @if (isLoggedIn()) {
     <div class="comment-form">
       <h3>Dejar un comentario</h3>
@@ -30,7 +29,6 @@
     </div>
   }
 
-  <!-- Lista de comentarios -->
   <div class="comments-list">
     <h3>
       Comentarios
@@ -48,8 +46,6 @@
     } @else {
 
       @for (comment of topLevelComments(); track comment._id) {
-
-        <!-- Comentario padre -->
         <div class="comment">
           <div class="comment-header">
             <div class="author-avatar">{{ comment.author.username[0].toUpperCase() }}</div>
@@ -78,9 +74,8 @@
             }
           </div>
 
-          <!-- Formulario de respuesta -->
           @if (replyingTo() === comment._id) {
-            <div class="reply-form">
+            <div class="reply-form" [id]="'reply-form-' + comment._id">
               <form [formGroup]="replyForm" (ngSubmit)="submitReply(comment._id)">
                 <textarea formControlName="content" placeholder="Escribe tu respuesta..." rows="3"></textarea>
                 <div class="reply-actions">
@@ -93,7 +88,6 @@
             </div>
           }
 
-          <!-- Replies anidadas -->
           @for (reply of getReplies(comment._id); track reply._id) {
             <div class="comment is-reply">
               <div class="comment-header">
@@ -101,11 +95,9 @@
                 <span class="author">{{ reply.author.username }}</span>
                 <span class="date">{{ reply.createdAt | date:'medium' }}</span>
               </div>
-
               <div class="comment-content">
                 <p>{{ reply.content }}</p>
               </div>
-
               <div class="comment-actions">
                 <div class="vote-buttons">
                   <button (click)="upvoteComment(reply._id)" class="btn-vote" [class.active]="hasUpvoted(reply)">
@@ -125,7 +117,6 @@
         </div>
       }
 
-      <!-- Paginación -->
       @if (totalPages() > 1) {
         <div class="pagination">
           <button (click)="changePage(currentPage() - 1)" [disabled]="currentPage() === 1" class="btn-page">
