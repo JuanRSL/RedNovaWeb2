@@ -39,6 +39,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/subforum/subforumForm/subforumForm.component').then(m => m.SubforumFormComponent)
   },
   {
+    path: 'subforums/:id',
+    loadComponent: () => import('./features/subforum/subforumDetail/subforumDetail.component').then(m => m.SubforumDetailComponent)
+  },
+  {
     path: 'profile',
     loadComponent: () => import('./features/user/user.component').then(m => m.ProfileComponent)
   },

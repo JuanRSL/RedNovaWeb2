@@ -75,7 +75,20 @@ export class SubforumFormComponent implements OnInit {
 
     this.isSubmitting.set(true);
     this.subforumService.createSubforum(payload).subscribe({
-      next: () => this.router.navigate(['/forums']),
+      next: (response: any) => {
+        // Extracción robusta del ID:
+        // 1. response.subforum._id (estándar definido en el servicio)
+        // 2. response.subforum.id (alternativa)
+        // 3. response._id (si el backend devuelve el objeto directamente)
+        // 4. response.id
+        const subforumId = response?.subforum?._id || response?.subforum?.id || response?._id || response?.id;
+        
+        if (subforumId) {
+          this.router.navigate(['/subforums', subforumId]);
+        } else {
+          this.router.navigate(['/forums']);
+        }
+      },
       error: (err) => {
         this.error.set(err?.error?.message || 'No se pudo crear el subforo.');
         this.isSubmitting.set(false);

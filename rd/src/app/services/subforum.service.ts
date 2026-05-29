@@ -28,4 +28,8 @@ getSubforums(forumId?: string): Observable<Subforum[]> {
     return this.api.post<{ message: string; subforum: Subforum }>('/subforums', data);
   }
   
+  getSubforumById(id: string): Observable<Subforum> {
+    return this.api.get<Subforum>(`/subforums/${id}`);
+  }
+
 }

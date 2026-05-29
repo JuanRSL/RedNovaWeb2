@@ -1,0 +1,29 @@
+<div class="subforum-page">
+  @if (isLoading()) {
+    <div class="loading">Cargando subforo...</div>
+  } @else if (error()) {
+    <div class="error-card">{{ error() }}</div>
+  } @else if (subforum(); as sf) {
+    <header class="subforum-header">
+      <div class="header-content">
+        <h1>r/{{ sf.name }}</h1>
+        <p class="description">{{ sf.description }}</p>
+        <div class="stats">
+          <span><strong>{{ sf.postCount || 0 }}</strong> publicaciones</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <a [routerLink]="['/posts/new']" [queryParams]="{ subforumId: sf._id }" class="btn-primary">
+          Nueva Publicación
+        </a>
+      </div>
+    </header>
+
+    <main class="posts-feed">
+      <!-- Aquí podrías incluir tu componente rn-post-list filtrado -->
+      <div class="feed-placeholder">
+        <p>Próximamente: Lista de publicaciones de este subforo.</p>
+      </div>
+    </main>
+  }
+</div>
