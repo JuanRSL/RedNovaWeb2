@@ -1,0 +1,192 @@
+/* ============================================================
+   auth.component.css  —  Login & Register  (tema morado)
+   Aplica a login.component.css y register.component.css
+   ============================================================ */
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+.auth-page {
+  min-height: calc(100vh - 64px - 4rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+/* ── Header decorativo ──────────────────────────────────────── */
+.auth-header {
+  padding: 2rem 2.25rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+  background: linear-gradient(160deg, var(--brand-light) 0%, var(--surface) 100%);
+}
+
+.auth-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-hi);
+  text-decoration: none;
+  margin-bottom: 1.1rem;
+}
+
+.auth-logo::before {
+  content: '';
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  background: var(--brand);
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px var(--brand-glow);
+}
+
+.auth-header h1 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--text-hi);
+  margin-bottom: 0.3rem;
+}
+
+.auth-header p {
+  font-size: 0.9rem;
+  color: var(--text-lo);
+}
+
+/* ── Formulario ─────────────────────────────────────────────── */
+.auth-body {
+  padding: 1.75rem 2.25rem;
+}
+
+.auth-body form {
+  display: grid;
+  gap: 1rem;
+}
+
+.auth-body label {
+  display: grid;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-md);
+}
+
+.auth-body input,
+.auth-body select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: var(--r-md);
+  border: 1px solid var(--border-strong);
+  background: var(--bg);
+  color: var(--text-hi);
+  font-size: 0.97rem;
+  margin-top: 0.1rem;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.auth-body input:focus,
+.auth-body select:focus {
+  outline: none;
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px var(--brand-glow);
+  background: var(--surface);
+}
+
+.auth-body small {
+  font-size: 0.8rem;
+  color: var(--text-lo);
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 400;
+}
+
+/* ── Botón principal ────────────────────────────────────────── */
+.auth-body button[type='submit'] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.85rem 1.5rem;
+  border-radius: var(--r-full);
+  background: var(--brand);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.97rem;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 10px var(--brand-glow);
+  transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+  margin-top: 0.25rem;
+}
+
+.auth-body button[type='submit']:hover:not(:disabled) {
+  background: var(--brand-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 18px var(--brand-glow);
+}
+
+.auth-body button[type='submit']:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ── Mensajes ───────────────────────────────────────────────── */
+.error {
+  padding: 0.75rem 1rem;
+  border-radius: var(--r-md);
+  background: var(--danger-bg);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  color: var(--danger);
+  font-size: 0.88rem;
+  margin: 0;
+}
+
+/* ── Footer ─────────────────────────────────────────────────── */
+.auth-footer {
+  padding: 1.1rem 2.25rem;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  background: var(--surface-muted);
+}
+
+.hint,
+.auth-footer p {
+  font-size: 0.88rem;
+  color: var(--text-lo);
+  margin: 0;
+}
+
+.hint a,
+.auth-footer a {
+  color: var(--brand);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.hint a:hover,
+.auth-footer a:hover { color: var(--brand-dark); }
+
+@media (max-width: 480px) {
+  .auth-body { padding: 1.4rem 1.25rem; }
+  .auth-header { padding: 1.5rem 1.25rem 1.1rem; }
+  .auth-footer { padding: 1rem 1.25rem; }
+}

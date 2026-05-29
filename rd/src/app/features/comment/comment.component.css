@@ -1,0 +1,363 @@
+/* ============================================================
+   comment.component.css  (tema morado)
+   ============================================================ */
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+.comments-section {
+  display: grid;
+  gap: 1.5rem;
+}
+
+/* ── Formulario de comentario ───────────────────────────────── */
+.comment-form {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.comment-form-header {
+  padding: 1rem 1.4rem;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-display);
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-hi);
+  background: var(--surface-muted);
+}
+
+.comment-form h3 {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-hi);
+  padding: 1rem 1.4rem;
+  border-bottom: 1px solid var(--border);
+  margin: 0;
+  background: var(--surface-muted);
+}
+
+.comment-form form {
+  padding: 1rem 1.4rem;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.comment-form textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 0.75rem 1rem;
+  border-radius: var(--r-md);
+  border: 1px solid var(--border-strong);
+  background: var(--bg);
+  color: var(--text-hi);
+  font-size: 0.95rem;
+  resize: vertical;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  line-height: 1.6;
+}
+
+.comment-form textarea:focus {
+  outline: none;
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px var(--brand-glow);
+  background: var(--surface);
+}
+
+.comment-form textarea.error {
+  border-color: var(--danger);
+}
+
+.form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.6rem;
+}
+
+.btn-submit {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.6rem 1.25rem;
+  border-radius: var(--r-full);
+  background: var(--brand);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.88rem;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 8px var(--brand-glow);
+  transition: background 0.15s, transform 0.15s;
+}
+
+.btn-submit:hover:not(:disabled) {
+  background: var(--brand-dark);
+  transform: translateY(-1px);
+}
+
+.btn-submit:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ── Login prompt ───────────────────────────────────────────── */
+.login-prompt {
+  padding: 1rem 1.4rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  font-size: 0.92rem;
+  color: var(--text-md);
+}
+
+.login-prompt a {
+  color: var(--brand);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.login-prompt a:hover { color: var(--brand-dark); }
+
+/* ── Lista de comentarios ───────────────────────────────────── */
+.comments-list {
+  display: grid;
+  gap: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.comments-list h3 {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text-hi);
+  padding: 1rem 1.4rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-muted);
+  margin: 0;
+}
+
+/* ── Comentario individual ──────────────────────────────────── */
+.comment {
+  padding: 1.1rem 1.4rem;
+  border-bottom: 1px solid var(--border);
+  display: grid;
+  gap: 0.65rem;
+  transition: background 0.15s;
+}
+
+.comment:last-child { border-bottom: none; }
+.comment:hover { background: #faf9fd; }
+
+.comment.is-reply {
+  margin-left: 2rem;
+  border-left: 2.5px solid var(--border-strong);
+  background: var(--surface-muted);
+  border-radius: 0 var(--r-md) var(--r-md) 0;
+}
+
+.comment-header {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.author-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--brand-light);
+  color: var(--brand-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.author {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-hi);
+}
+
+.date {
+  font-size: 0.8rem;
+  color: var(--text-lo);
+  margin-left: auto;
+}
+
+.comment-content {
+  font-size: 0.93rem;
+  color: var(--text-md);
+  line-height: 1.65;
+}
+
+.comment-content p { margin: 0; }
+
+/* ── Acciones de comentario ─────────────────────────────────── */
+.comment-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.vote-buttons {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: var(--surface-muted);
+  border: 1px solid var(--border);
+  border-radius: var(--r-full);
+  padding: 0.2rem 0.4rem;
+}
+
+.btn-vote {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: var(--r-full);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-lo);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.btn-vote:hover { background: var(--brand-light); color: var(--brand-dark); }
+.btn-vote.active { color: var(--brand-dark); background: var(--brand-light); }
+
+.btn-reply,
+.btn-delete {
+  padding: 0.3rem 0.7rem;
+  border-radius: var(--r-full);
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.btn-reply { color: var(--text-md); background: none; }
+.btn-reply:hover { background: var(--surface-muted); color: var(--text-hi); }
+
+.btn-delete { color: var(--danger); background: none; }
+.btn-delete:hover { background: var(--danger-bg); }
+
+/* ── Reply form ─────────────────────────────────────────────── */
+.reply-form {
+  margin-top: 0.25rem;
+  padding: 1rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+}
+
+.reply-form textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 0.65rem 0.9rem;
+  border-radius: var(--r-md);
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  font-size: 0.9rem;
+  resize: vertical;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  line-height: 1.6;
+  color: var(--text-hi);
+  margin-bottom: 0.65rem;
+}
+
+.reply-form textarea:focus {
+  outline: none;
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px var(--brand-glow);
+}
+
+.reply-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-cancel {
+  padding: 0.5rem 1rem;
+  border-radius: var(--r-full);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-md);
+  background: var(--surface-muted);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-cancel:hover { background: #ddd6f3; }
+
+/* ── Paginación ─────────────────────────────────────────────── */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1rem 1.4rem;
+  border-top: 1px solid var(--border);
+  background: var(--surface-muted);
+}
+
+.btn-page {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 1rem;
+  border-radius: var(--r-full);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-md);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.btn-page:hover:not(:disabled) { background: var(--brand-light); color: var(--brand-dark); border-color: transparent; }
+.btn-page:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.pagination span {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-lo);
+}
+
+/* ── Loading / empty / error ────────────────────────────────── */
+.loading, .empty-state {
+  padding: 1.5rem 1.4rem;
+  color: var(--text-lo);
+  font-size: 0.92rem;
+}
+
+.empty-state { text-align: center; }
+.empty-state p { margin: 0; }
+
+.error-message {
+  padding: 0.85rem 1.4rem;
+  color: var(--danger);
+  font-size: 0.88rem;
+}
+
+.field-error {
+  font-size: 0.82rem;
+  color: var(--danger);
+}
+
+@media (max-width: 600px) {
+  .comment.is-reply { margin-left: 1rem; }
+  .comment-header .date { display: none; }
+}

@@ -1,0 +1,241 @@
+/* ============================================================
+   app.component.css  —  Shell principal / Navbar
+   ============================================================ */
+
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ════════════════════════════════════════════════════════════
+   NAVBAR
+   ════════════════════════════════════════════════════════════ */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(20px) saturate(1.5);
+  -webkit-backdrop-filter: blur(20px) saturate(1.5);
+  border-bottom: 1px solid rgba(124, 58, 237, 0.08);
+  box-shadow:
+    0 1px 0 rgba(124, 58, 237, 0.06),
+    0 4px 24px rgba(60, 20, 120, 0.05);
+}
+
+.navbar-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+/* ── Logo ───────────────────────────────────────────────────── */
+.navbar-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.navbar-brand-name {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg, var(--brand) 0%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.1;
+}
+
+.navbar-brand-sub {
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: var(--text-lo);
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+}
+
+/* ── Nav links ──────────────────────────────────────────────── */
+.navbar-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin: 0 auto;
+  list-style: none;
+}
+
+.nav-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 1rem;
+  border-radius: var(--r-full);
+  font-size: 0.93rem;
+  font-weight: 500;
+  color: var(--text-md);
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+  position: relative;
+}
+
+.nav-link:hover {
+  background: var(--surface-muted);
+  color: var(--text-hi);
+}
+
+.nav-link.active {
+  background: var(--brand-light);
+  color: var(--brand-dark);
+  font-weight: 600;
+}
+
+/* ── Auth buttons ───────────────────────────────────────────── */
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-nav-login {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1.1rem;
+  border-radius: var(--r-full);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-md);
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.btn-nav-login:hover {
+  background: var(--surface-muted);
+  border-color: var(--brand-mid);
+  color: var(--brand-dark);
+}
+
+.btn-nav-register {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1.25rem;
+  border-radius: var(--r-full);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, var(--brand) 0%, var(--brand-dark) 100%);
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: 0 2px 12px var(--brand-glow);
+  transition: box-shadow 0.18s, transform 0.18s;
+}
+
+.btn-nav-register:hover {
+  box-shadow: 0 4px 20px var(--brand-glow-lg);
+  transform: translateY(-1px);
+}
+
+/* ── User avatar (cuando está logueado) ─────────────────────── */
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  padding: 0.35rem 0.75rem 0.35rem 0.35rem;
+  border-radius: var(--r-full);
+  border: 1px solid var(--border);
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.user-menu:hover {
+  background: var(--surface-muted);
+  border-color: var(--border-strong);
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--brand-light) 0%, var(--brand-mid) 100%);
+  color: var(--brand-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  border: 2px solid rgba(124, 58, 237, 0.20);
+}
+
+.user-name {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-hi);
+}
+
+/* ════════════════════════════════════════════════════════════
+   CONTENIDO PRINCIPAL
+   ════════════════════════════════════════════════════════════ */
+.main-content {
+  flex: 1;
+  padding: 2rem 1.5rem;
+}
+
+.main-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ════════════════════════════════════════════════════════════
+   FOOTER
+   ════════════════════════════════════════════════════════════ */
+.app-footer {
+  padding: 1.5rem 1.5rem;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  background: rgba(255, 255, 255, 0.60);
+  backdrop-filter: blur(10px);
+}
+
+.app-footer p {
+  font-size: 0.82rem;
+  color: var(--text-lo);
+  font-weight: 500;
+}
+
+.app-footer strong {
+  background: linear-gradient(90deg, var(--brand), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+}
+
+/* ════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .navbar-inner { padding: 0 1rem; gap: 1rem; }
+  .navbar-brand-sub { display: none; }
+  .nav-link { padding: 0.4rem 0.7rem; font-size: 0.87rem; }
+  .main-content { padding: 1.5rem 1rem; }
+}
+
+@media (max-width: 480px) {
+  .navbar-nav { gap: 0; }
+  .btn-nav-login { display: none; }
+}

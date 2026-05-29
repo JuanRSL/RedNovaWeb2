@@ -1,0 +1,174 @@
+/* ============================================================
+   forum-detail.component.css  (tema morado)
+   ============================================================ */
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+.forum-detail-container {
+  display: grid;
+  gap: 1.75rem;
+}
+
+/* ── Banner del foro ────────────────────────────────────────── */
+.forum-header {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  box-shadow: var(--shadow-sm);
+  padding: 2rem 2.25rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  background: linear-gradient(135deg, var(--brand-light) 0%, var(--surface) 60%);
+}
+
+.forum-header h1 {
+  font-size: clamp(1.6rem, 3vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  margin-bottom: 0.2rem;
+}
+
+.forum-slug {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--brand);
+  margin-bottom: 0.6rem;
+}
+
+.forum-description {
+  font-size: 0.97rem;
+  color: var(--text-md);
+  line-height: 1.65;
+  max-width: 60ch;
+}
+
+.private-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.75rem;
+  background: var(--warning-bg);
+  color: var(--warning);
+  border-radius: var(--r-full);
+  font-size: 0.78rem;
+  font-weight: 700;
+  margin-top: 0.5rem;
+}
+
+/* ── Contenido del foro ─────────────────────────────────────── */
+.forum-content {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: 1fr 320px;
+}
+
+/* ── Subforos y moderadores ─────────────────────────────────── */
+.subforums-section,
+.moderators-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.section-header {
+  padding: 1rem 1.4rem;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-hi);
+  background: var(--surface-muted);
+}
+
+.subforum-grid {
+  display: grid;
+  gap: 0;
+}
+
+.subforum-card {
+  display: block;
+  padding: 1rem 1.4rem;
+  text-decoration: none;
+  color: inherit;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+
+.subforum-card:last-child { border-bottom: none; }
+.subforum-card:hover { background: var(--surface-muted); }
+
+.subforum-card h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-hi);
+  margin-bottom: 0.2rem;
+}
+
+.subforum-card p {
+  font-size: 0.85rem;
+  color: var(--text-lo);
+  line-height: 1.5;
+}
+
+/* ── Moderadores ────────────────────────────────────────────── */
+.moderator-list {
+  padding: 1rem 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.moderator-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--surface-muted);
+  border-radius: var(--r-md);
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text-md);
+}
+
+.moderator-badge::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--brand);
+}
+
+/* ── Empty / estados ────────────────────────────────────────── */
+.empty-message {
+  padding: 1.25rem 1.4rem;
+  color: var(--text-lo);
+  font-size: 0.9rem;
+}
+
+.loading {
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-lo);
+}
+
+.error-message {
+  padding: 0.85rem 1rem;
+  border-radius: var(--r-md);
+  background: var(--danger-bg);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  color: var(--danger);
+  font-size: 0.88rem;
+}
+
+@media (max-width: 860px) {
+  .forum-content { grid-template-columns: 1fr; }
+  .forum-header { padding: 1.4rem 1.25rem; }
+}
