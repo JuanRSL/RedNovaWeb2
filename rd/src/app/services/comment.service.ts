@@ -30,12 +30,16 @@ export class CommentService {
   }
 
   // upvote y downvote también necesitan el ID del comentario en la URL, no en el body
-  upvoteComment(commentId: string): Observable<VoteResponse> {
-    return this.api.post<VoteResponse>(`/comentarios/${commentId}/upvote`, {});
+  upvoteComment(commentId: string, postId?: string): Observable<VoteResponse> {
+    const body: any = {};
+    if (postId) body.postId = postId;
+    return this.api.post<VoteResponse>(`/comentarios/${commentId}/upvote`, body);
   }
 
   // downvoteComment no estaba implementado, lo agregamos
-  downvoteComment(commentId: string): Observable<VoteResponse> {
-    return this.api.post<VoteResponse>(`/comentarios/${commentId}/downvote`, {});
+  downvoteComment(commentId: string, postId?: string): Observable<VoteResponse> {
+    const body: any = {};
+    if (postId) body.postId = postId;
+    return this.api.post<VoteResponse>(`/comentarios/${commentId}/downvote`, body);
   }
 }

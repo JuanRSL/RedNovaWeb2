@@ -28,6 +28,7 @@ export class CommentListComponent implements OnInit, OnDestroy {
   error = signal<string>('');
   isSubmitting = signal<boolean>(false);
   submitError = signal<string>('');
+  voteError = signal<string>('');
   replyingTo = signal<string | null>(null);
   isLoggedIn = signal<boolean>(false);
 
@@ -155,20 +156,68 @@ export class CommentListComponent implements OnInit, OnDestroy {
   }
 
   upvoteComment(commentId: string): void {
-    this.commentService.upvoteComment(commentId)
+    this.voteError.set('');
+    const user = this.authService.currentUser();
+    if (!user?._id) {
+      this.voteError.set('Debes iniciar sesión para votar');
+      return;
+    }
+
+    const prev = this.comments();
+    const userId = user._id;
+    const updated = prev.map(c => {
+      if (c._id !== commentId) return c;
+      const hasUp = c.upvotes.includes(userId);
+      const hasDown = c.downvotes.includes(userId);
+      const upvotes = hasUp ? c.upvotes.filter(id => id !== userId) : [...c.upvotes, userId];
+      const downvotes = hasDown ? c.downvotes.filter(id => id !== userId) : c.downvotes.filter(id => id !== userId);
+      return { ...c, upvotes, downvotes } as Comment;
+    });
+
+    this.comments.set(updated);
+
+    this.commentService.upvoteComment(commentId, this.postId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (): void => this.loadComments(),
-        error: (err: any): void => console.error('Error upvote:', err)
+        error: (err: any): void => {
+          console.error('Error upvote:', err);
+          this.voteError.set(err?.error?.message || 'Error al registrar voto');
+          this.comments.set(prev);
+        }
       });
   }
 
   downvoteComment(commentId: string): void {
-    this.commentService.downvoteComment(commentId)
+    this.voteError.set('');
+    const user = this.authService.currentUser();
+    if (!user?._id) {
+      this.voteError.set('Debes iniciar sesión para votar');
+      return;
+    }
+
+    const prev = this.comments();
+    const userId = user._id;
+    const updated = prev.map(c => {
+      if (c._id !== commentId) return c;
+      const hasDown = c.downvotes.includes(userId);
+      const hasUp = c.upvotes.includes(userId);
+      const downvotes = hasDown ? c.downvotes.filter(id => id !== userId) : [...c.downvotes, userId];
+      const upvotes = hasUp ? c.upvotes.filter(id => id !== userId) : c.upvotes.filter(id => id !== userId);
+      return { ...c, upvotes, downvotes } as Comment;
+    });
+
+    this.comments.set(updated);
+
+    this.commentService.downvoteComment(commentId, this.postId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (): void => this.loadComments(),
-        error: (err: any): void => console.error('Error downvote:', err)
+        error: (err: any): void => {
+          console.error('Error downvote:', err);
+          this.voteError.set(err?.error?.message || 'Error al registrar voto');
+          this.comments.set(prev);
+        }
       });
   }
 

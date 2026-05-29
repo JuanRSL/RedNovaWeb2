@@ -29,6 +29,10 @@
     </div>
   }
 
+  @if (voteError()) {
+    <div class="error-message">{{ voteError() }}</div>
+  }
+
   <div class="comments-list">
     <h3>
       Comentarios
@@ -59,10 +63,10 @@
 
           <div class="comment-actions">
             <div class="vote-buttons">
-              <button (click)="upvoteComment(comment._id)" class="btn-vote" [class.active]="hasUpvoted(comment)">
+              <button (click)="upvoteComment(comment._id)" class="btn-vote" [class.active]="hasUpvoted(comment)" [disabled]="!isLoggedIn()">
                 ▲ {{ comment.upvotes.length }}
               </button>
-              <button (click)="downvoteComment(comment._id)" class="btn-vote" [class.active]="hasDownvoted(comment)">
+              <button (click)="downvoteComment(comment._id)" class="btn-vote" [class.active]="hasDownvoted(comment)" [disabled]="!isLoggedIn()">
                 ▼ {{ comment.downvotes.length }}
               </button>
             </div>
@@ -100,10 +104,10 @@
               </div>
               <div class="comment-actions">
                 <div class="vote-buttons">
-                  <button (click)="upvoteComment(reply._id)" class="btn-vote" [class.active]="hasUpvoted(reply)">
+                  <button (click)="upvoteComment(reply._id)" class="btn-vote" [class.active]="hasUpvoted(reply)" [disabled]="!isLoggedIn()">
                     ▲ {{ reply.upvotes.length }}
                   </button>
-                  <button (click)="downvoteComment(reply._id)" class="btn-vote" [class.active]="hasDownvoted(reply)">
+                  <button (click)="downvoteComment(reply._id)" class="btn-vote" [class.active]="hasDownvoted(reply)" [disabled]="!isLoggedIn()">
                     ▼ {{ reply.downvotes.length }}
                   </button>
                 </div>

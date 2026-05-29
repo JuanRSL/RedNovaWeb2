@@ -76,8 +76,37 @@ export class PostService {
   }
 
   votePost(id: string, voteType: 'upvote' | 'downvote'): Observable<{ score: number }> {
-    return this.api.post<{ score: number }>(`/posts/${id}/vote`, { voteType })
-      .pipe(catchError(this.handleError));
+    const paths = [
+      `/posts/${id}/vote`,
+      `/posts/${id}/vote/${voteType}`,
+      `/posts/${id}/${voteType}`,
+      `/posts/vote/${id}`,
+      `/posts/${voteType}/${id}`,
+      `/posts/${id}/votes`,
+      `/posts/${id}/votes/${voteType}`
+    ];
+
+    return this.tryPaths(paths, id, voteType);
+  }
+
+  private tryPaths(paths: string[], id: string, voteType: 'upvote' | 'downvote', index = 0): Observable<{ score: number }> {
+    if (index >= paths.length) {
+      return throwError(() => ({ status: 404, message: 'No se encontró la ruta de votación del backend' }));
+    }
+
+    const path = paths[index];
+    const body = path.endsWith('/vote') || path.includes('/vote/') || path.endsWith('/votes') || path.includes('/votes/')
+      ? { voteType }
+      : {};
+
+    return this.api.post<{ score: number }>(path, body).pipe(
+      catchError((err: any) => {
+        if (err?.status === 404) {
+          return this.tryPaths(paths, id, voteType, index + 1);
+        }
+        return throwError(() => err);
+      })
+    );
   }
 
   private handleError(error: any): Observable<never> {
