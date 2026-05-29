@@ -1,27 +1,31 @@
-<section class="page">
-  <a routerLink="/posts">← Back to posts</a>
+<div class="post-detail-page">
+  <a routerLink="/posts" class="back-link">← Volver a publicaciones</a>
 
-  <p class="error" *ngIf="error()">{{ error() }}</p>
-  <p *ngIf="isLoading()">Loading post…</p>
+  <p class="error-state" *ngIf="error()">{{ error() }}</p>
+  <p class="loading-state" *ngIf="isLoading()">Cargando publicación…</p>
 
   <article *ngIf="!isLoading() && post()" class="post-detail">
-    <h1>{{ post()?.title }}</h1>
-    <p class="meta">
-      <span>By {{ post()?.author?.username || 'Unknown' }}</span>
-      <span>{{ post()?.createdAt | date: 'medium' }}</span>
-      <span>{{ post()?.forum?.name || post()?.subforum?.name }}</span>
-    </p>
-    <div class="content">{{ post()?.content }}</div>
+    <div class="post-detail-inner">
 
-    <div class="actions">
-      <button type="button" (click)="vote('upvote')">Upvote</button>
-      <button type="button" (click)="vote('downvote')">Downvote</button>
-      <span class="score">Score: {{ post()?.score ?? 0 }}</span>
+      <div class="post-tags">
+        <span class="tag">{{ post()?.forum?.name || post()?.subforum?.name }}</span>
+      </div>
+
+      <h1>{{ post()?.title }}</h1>
+
+      <div class="post-meta">
+        <span>Por {{ post()?.author?.username || 'Desconocido' }}</span>
+        <span class="delimiter">·</span>
+        <span>{{ post()?.createdAt | date:'medium' }}</span>
+      </div>
+
+      <div class="post-content">{{ post()?.content }}</div>
+
     </div>
-  </article>
-  
-  <!-- Comments -->
-  <section *ngIf="post()">
-    <rn-comment-list [postId]="post()?.id || post()?._id"></rn-comment-list>
-  </section>
-</section>
+
+    <div class="post-footer">
+      <div class="vote-group">
+        <button class="vote-btn" type="button" (click)="vote('upvote')" [class.active]="hasUpvoted()">▲</button>
+        <span class="vote-score">{{ post()?.score ?? 0 }}</span>
+        <span class="score-label">puntos</span>
+        <button class="vote-btn" type="button" (click)="vote('dow

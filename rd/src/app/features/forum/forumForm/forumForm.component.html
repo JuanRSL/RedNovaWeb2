@@ -1,27 +1,46 @@
-<div class="form-card">
-  <h2>Crear Foro</h2>
+<div class="form-page">
+  <div class="form-card">
 
-  <form (ngSubmit)="submit()" [formGroup]="form">
-    <label>Nombre
-      <input formControlName="name" />
-    </label>
-
-    <label>Slug
-      <input formControlName="slug" />
-    </label>
-
-    <label>Descripción
-      <textarea formControlName="description"></textarea>
-    </label>
-
-    <label>
-      <input type="checkbox" formControlName="isPrivate" /> Foro privado
-    </label>
-
-    <div class="actions">
-      <button type="submit">Crear</button>
+    <div class="form-card-header">
+      <h2>Crear Foro</h2>
+      <p>Crea una nueva comunidad en RedNova</p>
     </div>
 
-    <p class="error" *ngIf="error()">{{ error() }}</p>
-  </form>
+    <form (ngSubmit)="submit()" [formGroup]="form">
+      <div class="form-card-body">
+
+        <div class="form-group">
+          <label>Nombre</label>
+          <input formControlName="name" placeholder="Nombre del foro" />
+        </div>
+
+        <div class="form-group">
+          <label>Slug</label>
+          <input formControlName="slug" placeholder="slug-del-foro" />
+        </div>
+
+        <div class="form-group">
+          <label>Descripción</label>
+          <textarea formControlName="description" placeholder="¿De qué trata este foro?"></textarea>
+        </div>
+
+        <div class="checkbox-row">
+          <input type="checkbox" formControlName="isPrivate" id="isPrivate" />
+          <label for="isPrivate">Foro privado</label>
+        </div>
+
+        @if (error()) {
+          <p class="form-error">{{ error() }}</p>
+        }
+
+      </div>
+
+      <div class="form-card-footer">
+        <button type="submit" [disabled]="form.invalid || isSubmitting()">
+          {{ isSubmitting() ? 'Creando...' : 'Crear foro' }}
+        </button>
+      </div>
+
+    </form>
+  </div>
 </div>
